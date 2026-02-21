@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HookAffiliate AI</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <script defer src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script defer src="app.js"></script>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>AI Hook Generator</h1>
+  <p class="subtitle">Tool AI khusus Affiliate Indonesia</p>
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="left-info">
+      <div class="credit-box">
+        Credit: <span id="creditValue">0</span>
+      </div>
+      <div class="email-text" id="userEmail"></div>
+    </div>
+
+    <div class="right-actions">
+      <button id="addCreditBtn" class="btn-add">+10 Credit</button>
+      <button id="logoutBtn" class="btn-logout">Logout</button>
+    </div>
+  </div>
+
+  <!-- MAIN GENERATOR -->
+  <div class="card" id="appBox" style="display:none;">
+
+    <label>Kategori Produk</label>
+    <select id="category">
+      <option value="">Pilih Kategori</option>
+      <option>Skincare</option>
+      <option>Fashion</option>
+      <option>Elektronik</option>
+      <option>Food</option>
+      <option>Digital Product</option>
+    </select>
+
+    <label>Nama Produk</label>
+    <input id="productName" placeholder="Contoh: Serum Glow A">
+
+    <label>Deskripsi Produk</label>
+    <textarea id="productDesc" placeholder="Jelaskan manfaat utama produk"></textarea>
+
+    <label>Platform</label>
+    <select id="platform">
+      <option value="">Pilih Platform</option>
+      <option>TikTok</option>
+      <option>Instagram Reels</option>
+      <option>Shopee Video</option>
+      <option>YouTube Shorts</option>
+    </select>
+
+    <label>Tipe Audience</label>
+    <select id="audience">
+      <option value="">Pilih Audience</option>
+      <option>Remaja</option>
+      <option>Ibu Sosialita</option>
+      <option>Gen Z</option>
+      <option>Mahasiswa</option>
+      <option>Dewasa</option>
+      <option>Pekerja Kantoran</option>
+    </select>
+
+    <label>Style Promosi</label>
+    <select id="style">
+      <option value="">Pilih Style</option>
+      <option>Soft Selling</option>
+      <option>Hard Selling</option>
+      <option>Storytelling</option>
+      <option>Problem - Solution</option>
+      <option>Emotional</option>
+    </select>
+
+    <label>Durasi Hook</label>
+    <select id="duration">
+      <option value="">Pilih Durasi</option>
+      <option>5 Detik</option>
+      <option>7 Detik</option>
+      <option>10 Detik</option>
+      <option>15 Detik</option>
+    </select>
+
+    <label>Pilih Mode</label>
+    <div class="mode-wrapper">
+      <button id="freeBtn" class="mode-btn active">Free</button>
+      <button id="proBtn" class="mode-btn">Pro</button>
+    </div>
+
+    <button class="generate-btn" id="generateBtn">Generate Hook</button>
+
+  </div>
+
+  <!-- RESULT -->
+  <div class="result-card" id="result">
+    Hook akan muncul di sini...
+  </div>
+
+  <!-- PRO DASHBOARD -->
+  <div class="card dashboard-card">
+    <div id="proDashboard" style="display:none;">
+      <h3>Dashboard Pro</h3>
+
+      <p>Credit Anda: <span id="proCredit">0</span></p>
+
+      <button id="buyCreditBtn" class="generate-btn">
+        Beli 100 Credit (Test)
+      </button>
+
+      <h4>Riwayat Generate</h4>
+      <div id="historyList"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- LOGIN MODAL -->
+
+<div id="loginModal">
+  <div class="modal-box">
+    <h2>Login / Register</h2>
+    <input id="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
+    <button id="loginBtn">Login</button>
+    <button id="registerBtn">Register</button>
+  </div>
+</div>
+
+</body>
+</html>
