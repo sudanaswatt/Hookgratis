@@ -8,12 +8,6 @@ export default async function handler(req, res) {
 
   try {
 
-    const { productName, productDesc, audience, style, platform, mode } = req.body;
-
-    if (!productName || !audience || !style || !platform) {
-      return res.status(400).json({ error: "Field tidak lengkap." });
-    }
-
     const token = req.headers.authorization?.replace("Bearer ", "");
     if (!token) {
       return res.status(401).json({ error: "Unauthorized." });
@@ -24,108 +18,68 @@ export default async function handler(req, res) {
       process.env.SUPABASE_SERVICE_ROLE_KEY
     );
 
-    const { data: userData } = await supabase.auth.getUser(token);
-    if (!userData?.user) {
+    // ✅ Validasi user
+    const { data: userData, error: userError } =
+      await supabase.auth.getUser(token);
+
+    if (userError || !userData?.user) {
       return res.status(401).json({ error: "User tidak valid." });
     }
 
     const userId = userData.user.id;
 
-    const { data: profile } = await supabase
+    // ✅ Ambil profile
+    const { data: profile, error } = await supabase
       .from("profiles")
-      .select("credits")
+      .select("credits, last_claim_at")
       .eq("id", userId)
       .single();
 
-    if (!profile) {
+    if (error || !profile) {
       return res.status(500).json({ error: "Profile tidak ditemukan." });
     }
 
-    // ================= FREE =================
+    const now = new Date();
+    const lastClaim = profile.last_claim_at
+      ? new Date(profile.last_claim_at)
+      : null;
 
-    if (mode === "free") {
+    // ✅ Cek 24 jam
+    if (lastClaim) {
+      const diffHours =
+        (now.getTime() - lastClaim.getTime()) / (1000 * 60 * 60);
 
-      const templates = [
-        `Masih kesulitan bikin konten ${platform}? ${productName} cocok untuk ${audience} yang ingin hasil maksimal tanpa ribet.`,
-        `${productName} bantu ${audience} tampil lebih maksimal di ${platform} tanpa strategi rumit.`,
-        `Kalau kamu ${audience}, ${productName} bisa jadi solusi cepat untuk naikkan performa di ${platform}.`
-      ];
-
-      const result = templates[Math.floor(Math.random() * templates.length)];
-
-      await supabase.from("generate_history").insert({
-        user_id: userId,
-        product_name: productName,
-        result,
-        mode: "free",
-        platform
-      });
-
-      return res.status(200).json({ result });
-    }
-
-    // ================= PRO =================
-
-    if (mode === "pro") {
-
-      if (profile.credits <= 0) {
-        return res.status(400).json({ error: "Credit habis." });
+      if (diffHours < 24) {
+        const remaining = (24 - diffHours).toFixed(1);
+        return res.status(400).json({
+          error: `Klaim sudah dilakukan. Coba lagi ${remaining} jam lagi.`
+        });
       }
-
-      await supabase
-        .from("profiles")
-        .update({ credits: profile.credits - 1 })
-        .eq("id", userId);
-
-      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          model: "openai/gpt-4o-mini",
-          messages: [
-            {
-              role: "user",
-              content: `
-Buat hook video yang powerfull.
-
-Produk: ${productName}
-Deskripsi: ${productDesc}
-Target: ${audience}
-Platform: ${platform}
-Gaya: ${style}
-
-Tanpa emoji. Tanpa hashtag.
-`
-            }
-          ]
-        })
-      });
-
-      const aiData = await response.json();
-
-      const result = aiData.choices?.[0]?.message?.content;
-
-      await supabase.from("generate_history").insert({
-        user_id: userId,
-        product_name: productName,
-        result,
-        mode: "pro",
-        platform
-      });
-
-      return res.status(200).json({ result });
     }
 
-    return res.status(400).json({ error: "Mode tidak valid." });
+    const newCredit = profile.credits + 10;
+
+    const { error: updateError } = await supabase
+      .from("profiles")
+      .update({
+        credits: newCredit,
+        last_claim_at: now.toISOString()
+      })
+      .eq("id", userId);
+
+    if (updateError) {
+      return res.status(500).json({ error: "Gagal update credit." });
+    }
+
+    return res.status(200).json({
+      message: "Berhasil klaim 10 credit.",
+      credits: newCredit
+    });
 
   } catch (err) {
-
     return res.status(500).json({
-      error: "Server crash",
-      detail: err.message
+      error: "Server crash.",
+      detail: err?.message
     });
   }
 }
