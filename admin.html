@@ -160,7 +160,10 @@ async function checkAdmin(){
 
   try {
 
-    const { data: { user } } = await supabaseClient.auth.getUser();
+    const { data: sessionData } =
+  await supabaseClient.auth.getSession();
+
+const user = sessionData?.session?.user;
 
     if(!user){
       document.getElementById("adminStatus").innerText =
