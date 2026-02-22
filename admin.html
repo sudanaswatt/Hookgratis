@@ -216,7 +216,13 @@ async function loadStats(){
     await supabaseClient.auth.getSession();
 
   const token = sessionData?.session?.access_token;
-
+  
+  if(!token){
+  alert("Session expired.");
+  button.disabled = false;
+  button.innerText = "Approve Topup";
+  return;
+}
   const response = await fetch("/api/approve-topup", {
     method: "POST",
     headers: {
