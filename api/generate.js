@@ -64,95 +64,95 @@ export default async function handler(req, res) {
 
   const hooks = [
 
-`Stop scroll dulu, ${audience} pasti pernah ngalamin ini.
+`Stop scroll dulu! ${audience}, ini cocok banget buat kamu.
 
-Di ${platform}, persaingan makin ketat dan banyak yang cuma ikut tren tanpa arah jelas. ${productName} hadir buat bantu kamu tampil lebih beda, lebih terarah, dan nggak cuma sekadar numpang lewat di timeline.
+${productName} lagi banyak dipakai karena manfaatnya langsung terasa dan nggak ribet dipakai. Cocok banget buat kamu yang aktif di ${platform} dan pengen hasil yang lebih maksimal tanpa drama.
 
-Kadang yang bikin beda itu bukan ribetnya strategi, tapi konsistensinya.`,
+Kalau lagi cari solusi yang praktis, ini bisa banget dicoba.`,
 
-`Kalau kamu ${audience} dan lagi serius main di ${platform}, ini penting banget.
+`Serius, jangan skip ini kalau kamu ${audience}.
 
-Banyak yang fokus ke konten viral, tapi lupa bangun fondasi yang kuat. ${productName} bisa bantu kamu punya pendekatan yang lebih stabil dan nggak gampang tenggelam di antara kompetitor.
+${productName} punya fungsi yang jelas dan memang dibuat untuk bantu kebutuhan kamu sehari-hari. Dipakai rutin, hasilnya jauh lebih terasa dan bikin aktivitas di ${platform} jadi lebih optimal.
 
-Karena yang konsisten biasanya yang menang.`,
+Banyak yang sudah mulai pakai, sekarang giliran kamu.`,
 
-`Jujur aja, berapa kali kamu merasa hasil di ${platform} stuck di situ-situ aja?
+`${audience} wajib tahu ini.
 
-Padahal effort sudah maksimal. ${productName} bantu ${audience} punya cara yang lebih terarah, jadi bukan cuma coba-coba tanpa hasil jelas.
+${productName} bukan cuma sekadar tren, tapi memang membantu dan lebih efektif dibanding alternatif lainnya. Apalagi buat kamu yang aktif di ${platform} dan butuh sesuatu yang benar-benar bekerja.
 
-Kadang kita cuma butuh pendekatan yang lebih tepat.`,
+Kalau lagi cari yang worth it, ini pilihan aman.`,
 
-`Banyak ${audience} belum sadar kalau masalahnya bukan di produk, tapi di cara penyampaiannya.
+`Kalau kamu masih pakai produk lama, coba bandingkan dulu dengan ${productName}.
 
-Di ${platform}, perhatian orang cuma beberapa detik. ${productName} bantu kamu tampil lebih relevan dan lebih cepat menarik perhatian tanpa terlihat terlalu memaksa.
+Dirancang khusus untuk ${audience}, manfaatnya terasa lebih cepat dan lebih efisien. Apalagi buat kamu yang aktif di ${platform}, ini bisa bantu performa jadi lebih maksimal.
 
-Dan itu yang bikin orang berhenti scroll.`,
+Kadang upgrade kecil bikin hasil jauh beda.`,
 
-`Kalau kamu merasa sudah capek bikin konten tapi hasil belum maksimal, mungkin ini waktunya evaluasi.
+`Jangan sampai ketinggalan info ini, ${audience}.
 
-${productName} dirancang untuk ${audience} yang ingin tampil lebih profesional dan lebih meyakinkan di ${platform}, tanpa harus ribet mikirin strategi kompleks setiap hari.
+${productName} punya keunggulan yang bikin banyak orang mulai beralih. Lebih praktis, lebih nyaman dipakai, dan cocok untuk kebutuhan kamu di ${platform}.
 
-Kadang yang dibutuhkan cuma sistem yang lebih rapi.`,
+Kalau lagi cari yang lebih efektif, ini jawabannya.`,
 
-`Serius, ${audience} yang main di ${platform} sekarang nggak bisa lagi asal posting.
+`${audience} yang aktif di ${platform} pasti ngerti pentingnya kualitas.
 
-Algoritma berubah, tren berubah, tapi yang tetap adalah kualitas pendekatan. ${productName} bantu kamu punya arah yang lebih jelas supaya nggak cuma ikut-ikutan tren.
+${productName} hadir dengan manfaat yang jelas dan penggunaan yang simpel. Tanpa ribet, tanpa proses yang bikin pusing, tapi tetap kasih hasil yang memuaskan.
 
-Karena ikut tren tanpa strategi jarang bertahan lama.`,
+Makanya sekarang makin banyak yang pakai.`,
 
-`Pernah nggak kamu merasa sudah kerja keras, tapi hasil di ${platform} tetap biasa saja?
+`Ini bukan produk biasa buat ${audience}.
 
-${productName} bantu ${audience} punya fondasi yang lebih kuat supaya performa lebih stabil dan nggak cuma naik turun karena faktor keberuntungan.
+${productName} dibuat supaya kamu bisa dapetin hasil lebih maksimal tanpa perlu effort berlebihan. Terutama buat kamu yang sering tampil atau aktif di ${platform}, ini bisa jadi pendukung utama.
 
-Yang konsisten itu bukan yang paling viral, tapi yang paling terstruktur.`,
+Yang penting itu hasilnya terasa.`,
 
-`Kalau target kamu di ${platform} cuma sekadar coba-coba, mungkin ini nggak terlalu penting.
+`Kalau kamu pengen hasil lebih cepat dan lebih praktis, ini menarik banget.
 
-Tapi kalau kamu ${audience} yang serius mau berkembang, ${productName} bisa bantu kamu tampil lebih terarah dan lebih percaya diri saat menyampaikan value.
+${productName} bantu ${audience} dapetin manfaat optimal dengan cara yang simpel. Cocok banget buat kamu yang nggak mau ribet tapi tetap mau hasil terbaik di ${platform}.
 
-Karena percaya diri itu kelihatan.`,
+Kadang solusi terbaik itu yang paling sederhana.`,
 
-`Di era sekarang, orang makin pintar memilih konten.
+`${audience}, ini solusi yang realistis.
 
-${productName} bantu ${audience} menyampaikan pesan dengan lebih jelas dan lebih fokus di ${platform}, jadi bukan cuma ramai tapi juga berdampak.
+${productName} membantu kebutuhan kamu dengan cara yang lebih efisien dan nggak bertele-tele. Dipakai rutin, efeknya jauh lebih terasa, apalagi buat kamu yang aktif di ${platform}.
 
-Karena yang berdampak biasanya yang diingat.`,
+Nggak heran banyak yang repeat order.`,
 
-`Banyak yang berpikir makin banyak posting makin bagus.
+`Kalau kamu masih ragu, coba lihat manfaatnya dulu.
 
-Padahal yang penting itu relevansi dan konsistensi. ${productName} bantu ${audience} di ${platform} supaya konten lebih terarah dan nggak cuma asal tayang.
+${productName} dirancang untuk ${audience} yang butuh solusi cepat dan efektif. Di ${platform}, performa kamu juga bisa lebih maksimal kalau didukung produk yang tepat.
 
-Strategi yang tepat lebih penting dari kuantitas.`,
+Investasi kecil, dampaknya besar.`,
 
-`Kalau kamu merasa hasil di ${platform} sering nggak konsisten, mungkin ini saatnya ubah pendekatan.
+`Buat ${audience} yang nggak mau asal pilih produk, ini menarik.
 
-${productName} dirancang buat ${audience} yang mau hasil lebih stabil tanpa harus overthinking setiap detail.
+${productName} punya kelebihan yang bikin penggunaan lebih nyaman dan hasil lebih stabil. Apalagi buat kamu yang aktif di ${platform}, ini bisa bantu tingkatkan kualitas aktivitas kamu.
 
-Kadang yang bikin beda itu sistem kecil yang dilakukan terus-menerus.`,
+Pilihan cerdas itu yang paling terasa hasilnya.`,
 
-`Realitanya, ${platform} sekarang penuh dengan konten serupa.
+`Kalau kamu sering merasa kurang maksimal, mungkin ini penyebabnya.
 
-${productName} bantu ${audience} tampil lebih berbeda dan lebih punya identitas, jadi nggak cuma tenggelam di antara yang lain.
+Tanpa dukungan produk yang tepat seperti ${productName}, hasil memang sulit optimal. Cocok banget buat ${audience} yang aktif di ${platform} dan mau performa lebih baik.
 
-Dan identitas itu yang bikin orang ingat.`,
+Sekali coba, biasanya langsung lanjut.`,
 
-`Kalau kamu ${audience} yang ingin naik level di ${platform}, jangan cuma fokus di tampilan luar.
+`${audience}, jangan cuma fokus ke harga.
 
-${productName} bantu kamu membangun pendekatan yang lebih kuat dari dalam, jadi bukan cuma terlihat bagus tapi juga terasa meyakinkan.
+Lihat juga kualitas dan manfaatnya. ${productName} bantu kamu dapetin hasil lebih maksimal dengan cara yang praktis dan efisien, terutama buat kamu yang aktif di ${platform}.
 
-Karena kepercayaan itu dibangun, bukan dipaksakan.`,
+Lebih baik pilih yang jelas manfaatnya.`,
 
-`Seringkali kita terlalu fokus ke angka view.
+`Ini solusi simpel tapi efektif.
 
-Padahal yang lebih penting adalah kualitas interaksi. ${productName} bantu ${audience} di ${platform} supaya bukan cuma dilihat, tapi juga diperhatikan.
+${productName} membantu ${audience} yang ingin hasil lebih maksimal tanpa ribet. Terutama buat kamu yang sering tampil atau aktif di ${platform}, ini bisa jadi pendukung penting.
 
-Dan diperhatikan itu jauh lebih bernilai.`,
+Praktis, jelas, dan terasa.`,
 
-`Kalau kamu masih merasa hasil di ${platform} belum sesuai ekspektasi, mungkin ini waktunya mencoba pendekatan berbeda.
+`Kalau kamu cari produk yang nggak cuma janji, ini patut dipertimbangkan.
 
-${productName} bantu ${audience} punya cara yang lebih terstruktur dan lebih matang dalam menyampaikan pesan.
+${productName} dirancang untuk ${audience} yang butuh hasil nyata dan penggunaan yang mudah. Apalagi buat kamu yang aktif di ${platform}, ini bisa bantu tingkatkan performa secara signifikan.
 
-Karena yang matang biasanya bertahan lebih lama.`
+Kadang yang bikin beda itu pilihan yang tepat.`
 
   ];
 
