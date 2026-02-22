@@ -2,113 +2,104 @@
 <html>
 <head>
   <title>Admin Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
   <style>
     body{
-  margin:0;
-  font-family: Inter, Arial, sans-serif;
-  background: linear-gradient(135deg,#0f172a,#1e293b);
-  color:white;
-  padding:20px;
-}
+      margin:0;
+      font-family:Inter, Arial, sans-serif;
+      background:linear-gradient(135deg,#0f172a,#1e293b);
+      color:white;
+      padding:20px;
+    }
 
-h1{
-  font-size:24px;
-  margin-bottom:20px;
-}
+    h1{
+      font-size:22px;
+      margin-bottom:20px;
+    }
 
-.card{
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(12px);
-  padding:20px;
-  border-radius:20px;
-  margin-bottom:20px;
-  border:1px solid rgba(255,255,255,0.08);
-}
+    .card{
+      background:rgba(255,255,255,0.05);
+      backdrop-filter:blur(12px);
+      padding:20px;
+      border-radius:18px;
+      margin-bottom:20px;
+      border:1px solid rgba(255,255,255,0.08);
+    }
 
-.stat-grid{
-  display:flex;
-  flex-direction:column;
-  gap:14px;
-}
+    .status-text{
+      font-size:14px;
+      opacity:0.9;
+    }
 
-.stat-item{
-  background: rgba(255,255,255,0.04);
-  padding:14px;
-  border-radius:14px;
-}
+    .stat-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+      margin-top:10px;
+    }
 
-.stat-label{
-  font-size:12px;
-  opacity:0.6;
-}
+    .stat-box{
+      background:rgba(255,255,255,0.04);
+      padding:16px;
+      border-radius:14px;
+      text-align:center;
+    }
 
-.stat-value{
-  font-size:20px;
-  font-weight:600;
-  margin-top:4px;
-}
+    .stat-number{
+      font-size:24px;
+      font-weight:700;
+    }
 
-.pending-item{
-  background: rgba(255,255,255,0.04);
-  padding:18px;
-  border-radius:18px;
-  margin-bottom:16px;
-  border:1px solid rgba(255,255,255,0.08);
-}
+    .stat-text{
+      font-size:12px;
+      opacity:0.6;
+      margin-top:4px;
+    }
 
-.pending-label{
-  font-size:12px;
-  opacity:0.6;
-  margin-top:10px;
-}
+    .pending-item{
+      background:rgba(255,255,255,0.04);
+      padding:18px;
+      border-radius:16px;
+      margin-bottom:16px;
+      border:1px solid rgba(255,255,255,0.08);
+    }
 
-.pending-value{
-  font-weight:600;
-  margin-top:2px;
-}
+    .pending-label{
+      font-size:12px;
+      opacity:0.6;
+      margin-top:10px;
+    }
 
-.approve-btn{
-  width:100%;
-  margin-top:16px;
-  padding:14px;
-  border:none;
-  border-radius:14px;
-  font-weight:600;
-  font-size:15px;
-  cursor:pointer;
-  background: linear-gradient(135deg,#6366f1,#8b5cf6);
-  color:white;
-  transition:0.3s;
-}
+    .pending-value{
+      font-weight:600;
+      margin-top:2px;
+      word-break:break-word;
+    }
 
-.approve-btn:active{
-  transform:scale(0.97);
-}
-.stat-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:14px;
-}
+    .approve-btn{
+      width:100%;
+      margin-top:16px;
+      padding:14px;
+      border:none;
+      border-radius:14px;
+      font-weight:600;
+      font-size:15px;
+      cursor:pointer;
+      background:linear-gradient(135deg,#6366f1,#8b5cf6);
+      color:white;
+      transition:0.2s;
+    }
 
-.stat-box{
-  background:rgba(255,255,255,0.04);
-  padding:18px;
-  border-radius:16px;
-  text-align:center;
-}
+    .approve-btn:active{
+      transform:scale(0.97);
+    }
 
-.stat-number{
-  font-size:26px;
-  font-weight:700;
-}
-
-.stat-text{
-  font-size:12px;
-  opacity:0.6;
-  margin-top:4px;
-}
+    .approve-btn:disabled{
+      opacity:0.7;
+      cursor:not-allowed;
+    }
   </style>
 </head>
 
@@ -117,38 +108,37 @@ h1{
 <h1>Admin Dashboard</h1>
 
 <div class="card">
-  <p id="adminStatus">Checking admin...</p>
+  <div id="adminStatus" class="status-text">Checking admin...</div>
 </div>
 
 <div class="card">
   <h3>Statistik</h3>
-
   <div class="stat-grid">
-
     <div class="stat-box">
       <div class="stat-number" id="totalUser">0</div>
       <div class="stat-text">Total User</div>
     </div>
-
     <div class="stat-box">
       <div class="stat-number" id="todayGenerate">0</div>
       <div class="stat-text">Generate Hari Ini</div>
     </div>
-
     <div class="stat-box">
       <div class="stat-number" id="monthGenerate">0</div>
       <div class="stat-text">Generate Bulan Ini</div>
     </div>
-
     <div class="stat-box">
       <div class="stat-number" id="pendingTopup">0</div>
       <div class="stat-text">Pending Topup</div>
     </div>
-
   </div>
 </div>
-<script>
 
+<div class="card">
+  <h3>Pending Topup</h3>
+  <div id="pendingList">Loading...</div>
+</div>
+
+<script>
 const { createClient } = supabase;
 
 const supabaseClient = createClient(
@@ -157,83 +147,74 @@ const supabaseClient = createClient(
 );
 
 async function checkAdmin(){
+  try{
+    const { data } = await supabaseClient.auth.getSession();
+    const user = data?.session?.user;
 
-  const { data: sessionData, error } =
-    await supabaseClient.auth.getSession();
+    if(!user){
+      document.getElementById("adminStatus").innerText =
+        "Belum login.";
+      return;
+    }
 
-  if(error){
+    const ADMIN_EMAIL = "sudanaswatt20@icloud.com";
+
+    if(user.email !== ADMIN_EMAIL){
+      document.getElementById("adminStatus").innerText =
+        "Bukan admin.";
+      return;
+    }
+
     document.getElementById("adminStatus").innerText =
-      "Session tidak ditemukan.";
-    return;
-  }
+      "Admin berhasil login.";
 
-  const user = sessionData?.session?.user;
+    await loadStats();
+    await loadPendingTopup();
 
-  if(!user){
-    document.getElementById("adminStatus").innerText =
-      "Belum login. Login dulu di halaman utama.";
-    return;
-  }
-
-  const ADMIN_EMAIL = "sudanaswatt20@icloud.com";
-
-  if(user.email !== ADMIN_EMAIL){
-    document.getElementById("adminStatus").innerText =
-      "Bukan admin.";
-    return;
-  }
-
-  document.getElementById("adminStatus").innerText =
-    "Admin berhasil login.";
-
-  await loadStats();
-  await loadPendingTopup();
-}
-
- catch(err){
+  } catch(err){
     document.getElementById("adminStatus").innerText =
       "Error membaca session.";
+    console.error(err);
   }
 }
 
 async function loadStats(){
-
   const today = new Date();
   today.setHours(0,0,0,0);
-
-  const firstDayMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  const firstDayMonth =
+    new Date(today.getFullYear(), today.getMonth(), 1);
 
   const { count: userCount } = await supabaseClient
     .from("profiles")
-    .select("*", { count: "exact", head: true });
+    .select("*", { count:"exact", head:true });
 
   const { count: todayCount } = await supabaseClient
     .from("generate_history")
-    .select("*", { count: "exact", head: true })
+    .select("*", { count:"exact", head:true })
     .gte("created_at", today.toISOString());
 
   const { count: monthCount } = await supabaseClient
     .from("generate_history")
-    .select("*", { count: "exact", head: true })
+    .select("*", { count:"exact", head:true })
     .gte("created_at", firstDayMonth.toISOString());
 
   const { count: pendingCount } = await supabaseClient
     .from("topup_requests")
-    .select("*", { count: "exact", head: true })
-    .eq("status", "pending");
+    .select("*", { count:"exact", head:true })
+    .eq("status","pending");
 
   document.getElementById("totalUser").innerText = userCount || 0;
   document.getElementById("todayGenerate").innerText = todayCount || 0;
   document.getElementById("monthGenerate").innerText = monthCount || 0;
   document.getElementById("pendingTopup").innerText = pendingCount || 0;
 }
-  async function loadPendingTopup(){
 
+async function loadPendingTopup(){
   const { data } = await supabaseClient
     .from("topup_requests")
     .select("*")
-    .eq("status", "pending")
-    .order("created_at", { ascending: false });
+    .eq("status","pending")
+    .order("created_at",{ ascending:false });
 
   const box = document.getElementById("pendingList");
   box.innerHTML = "";
@@ -243,74 +224,65 @@ async function loadStats(){
     return;
   }
 
-  data.forEach(item => {
+  data.forEach(item=>{
     box.innerHTML += `
-  <div class="pending-item">
+      <div class="pending-item">
+        <div class="pending-label">User ID</div>
+        <div class="pending-value">${item.user_id}</div>
 
-    <div class="pending-label">User ID</div>
-    <div class="pending-value">${item.user_id}</div>
+        <div class="pending-label">Amount</div>
+        <div class="pending-value">
+          Rp ${Number(item.amount).toLocaleString()}
+        </div>
 
-    <div class="pending-label">Amount</div>
-    <div class="pending-value">Rp ${item.amount.toLocaleString()}</div>
+        <div class="pending-label">Credit</div>
+        <div class="pending-value">
+          ${item.credit_amount} Credit
+        </div>
 
-    <div class="pending-label">Credit</div>
-    <div class="pending-value">${item.credit_amount} Credit</div>
-
-    <button class="approve-btn"
-      onclick="approveTopup('${item.id}', this)">
-      Approve Topup
-    </button>
-
-  </div>
-`;
+        <button class="approve-btn"
+          onclick="approveTopup('${item.id}', this)">
+          Approve Topup
+        </button>
+      </div>
+    `;
   });
 }
-  window.approveTopup = async function(id, button){
 
-  button.innerText = "Processing...";
-  button.disabled = true;
+window.approveTopup = async function(id, btn){
+  btn.innerText = "Processing...";
+  btn.disabled = true;
 
-  const { data: sessionData } =
-    await supabaseClient.auth.getSession();
+  const { data } = await supabaseClient.auth.getSession();
+  const token = data?.session?.access_token;
 
-  const token = sessionData?.session?.access_token;
-  
   if(!token){
-  alert("Session expired.");
-  button.disabled = false;
-  button.innerText = "Approve Topup";
-  return;
-}
-  const response = await fetch("/api/approve-topup", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
+    alert("Session expired.");
+    btn.disabled = false;
+    btn.innerText = "Approve Topup";
+    return;
+  }
+
+  const res = await fetch("/api/approve-topup",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "Authorization":`Bearer ${token}`
     },
-    body: JSON.stringify({ requestId: id })
+    body:JSON.stringify({ requestId:id })
   });
 
-  const result = await response.json();
-
-  if(response.ok){
-    button.innerText = "Approved ✓";
-    button.style.background =
-      "linear-gradient(135deg,#6366f1,#4f46e5)";
+  if(res.ok){
+    btn.innerText = "Approved ✓";
     await loadStats();
     await loadPendingTopup();
-  } else {
-    button.innerText = "Approve Failed";
-    button.disabled = false;
-    alert(result.error);
+  }else{
+    btn.innerText = "Approve Failed";
+    btn.disabled = false;
   }
 };
 
-window.addEventListener("load", async () => {
-  setTimeout(async () => {
-    await checkAdmin();
-  }, 500);
-});
-
+window.addEventListener("load", checkAdmin);
 </script>
 
 </body>
