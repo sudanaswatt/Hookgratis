@@ -38,19 +38,21 @@
 
 <script>
 
-const supabase = window.supabase.createClient(
-  "https://fvtqwxzkxzauyiaqpauu.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2dHF3eHpreHphdXlpYXFwYXV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2MzkyMDksImV4cCI6MjA4NzIxNTIwOX0.d1s0att2MuxyFBx5v7lYhGOkQdGe-viUCNRw_HXs4Rk"
-);
+document.addEventListener("DOMContentLoaded", async () => {
 
-const urlParams = new URLSearchParams(window.location.search);
-const requestId = urlParams.get("id");
+  console.log("Status page running");
 
-const statusText = document.getElementById("statusText");
-const amountText = document.getElementById("amountText");
-const waBtn = document.getElementById("waBtn");
+  const supabase = window.supabase.createClient(
+    "https://fvtqwxzkxzauyiaqpauu.supabase.co",
+    "YOUR_ANON_KEY"
+  );
 
-async function loadStatus(){
+  const urlParams = new URLSearchParams(window.location.search);
+  const requestId = urlParams.get("id");
+
+  const statusText = document.getElementById("statusText");
+  const amountText = document.getElementById("amountText");
+  const waBtn = document.getElementById("waBtn");
 
   if(!requestId){
     statusText.innerText = "ID pembayaran tidak ditemukan.";
@@ -58,62 +60,60 @@ async function loadStatus(){
     return;
   }
 
-  const { data, error } = await supabase
-    .from("topup_requests")
-    .select("*")
-    .eq("id", requestId)
-    .maybeSingle();   // ⬅ lebih aman dari single()
+  async function loadStatus(){
 
-  if(error){
-    statusText.innerText = "Terjadi kesalahan sistem.";
-    return;
-  }
+    const { data, error } = await supabase
+      .from("topup_requests")
+      .select("*")
+      .eq("id", requestId)
+      .maybeSingle();
 
-  if(!data){
-    statusText.innerText = "Data pembayaran tidak ditemukan.";
-    waBtn.style.display = "none";
-    return;
-  }
+    if(error){
+      statusText.innerText = "Terjadi kesalahan sistem.";
+      return;
+    }
 
-  amountText.innerText = "Jumlah: Rp " + Number(data.amount).toLocaleString();
-
-  switch(data.status){
-    case "waiting_payment":
-      statusText.innerText = "Menunggu pembayaran.";
-      break;
-
-    case "pending":
-      statusText.innerText = "Pembayaran sedang diverifikasi admin.";
-      break;
-
-    case "approved":
-      statusText.innerText = "Pembayaran berhasil! Credit sudah ditambahkan.";
+    if(!data){
+      statusText.innerText = "Data pembayaran tidak ditemukan.";
       waBtn.style.display = "none";
-      break;
+      return;
+    }
 
-    case "rejected":
-      statusText.innerText = "Pembayaran ditolak. Hubungi admin.";
-      break;
+    amountText.innerText =
+      "Jumlah: Rp " + Number(data.amount).toLocaleString();
 
-    default:
-      statusText.innerText = "Status tidak diketahui.";
+    if(data.status === "waiting_payment"){
+      statusText.innerText = "Menunggu pembayaran.";
+    }
+
+    if(data.status === "pending"){
+      statusText.innerText = "Pembayaran sedang diverifikasi admin.";
+    }
+
+    if(data.status === "approved"){
+      statusText.innerText =
+        "Pembayaran berhasil! Credit sudah ditambahkan.";
+      waBtn.style.display = "none";
+    }
+
+    if(data.status === "rejected"){
+      statusText.innerText =
+        "Pembayaran ditolak. Hubungi admin.";
+    }
   }
-}
 
-loadStatus();
-setInterval(loadStatus, 5000);
+  waBtn.addEventListener("click", () => {
+    const message =
+      `Halo admin, saya sudah transfer dengan ID: ${requestId}`;
+    window.location.href =
+      `https://wa.me/6281523779397?text=${encodeURIComponent(message)}`;
+  });
 
-waBtn.onclick = ()=>{
-  if(!requestId) return;
+  await loadStatus();
+  setInterval(loadStatus, 5000);
 
-  const message = `Halo admin, saya sudah transfer dengan ID: ${requestId}`;
-  window.open(
-    `https://wa.me/6281523779397?text=${encodeURIComponent(message)}`,
-    "_blank"
-  );
-};
+});
 
 </script>
-
 </body>
 </html>
