@@ -46,7 +46,10 @@
   <p>Generate Bulan Ini: <span id="monthGenerate">0</span></p>
   <p>Pending Topup: <span id="pendingTopup">0</span></p>
 </div>
-
+<div class="card">
+  <h3>Pending Topup</h3>
+  <div id="pendingList">Loading...</div>
+</div>
 <script>
 
 const { createClient } = supabase;
@@ -77,9 +80,10 @@ async function checkAdmin(){
     }
 
     document.getElementById("adminStatus").innerText =
-      "Admin berhasil login.";
+  "Admin berhasil login.";
 
-    await loadStats();
+await loadStats();
+await loadPendingTopup();
 
   } catch(err){
     document.getElementById("adminStatus").innerText =
@@ -117,6 +121,59 @@ async function loadStats(){
   document.getElementById("todayGenerate").innerText = todayCount || 0;
   document.getElementById("monthGenerate").innerText = monthCount || 0;
   document.getElementById("pendingTopup").innerText = pendingCount || 0;
+}
+  async function loadPendingTopup(){
+
+  const { data } = await supabaseClient
+    .from("topup_requests")
+    .select("*")
+    .eq("status", "pending")
+    .order("created_at", { ascending: false });
+
+  const box = document.getElementById("pendingList");
+  box.innerHTML = "";
+
+  if(!data || data.length === 0){
+    box.innerHTML = "Tidak ada pending.";
+    return;
+  }
+
+  data.forEach(item => {
+    box.innerHTML += `
+      <div style="margin-bottom:15px;">
+        <p>User ID: ${item.user_id}</p>
+        <p>Amount: Rp${item.amount}</p>
+        <p>Credit: ${item.credit_amount}</p>
+        <button onclick="approveTopup('${item.id}')">
+          Approve
+        </button>
+      </div>
+    `;
+  });
+}
+  window.approveTopup = async function(id){
+
+  const { data: sessionData } = await supabaseClient.auth.getSession();
+  const token = sessionData?.session?.access_token;
+
+  const response = await fetch("/api/approve-topup", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`
+    },
+    body: JSON.stringify({ requestId: id })
+  });
+
+  const result = await response.json();
+
+  if(response.ok){
+    alert("Topup disetujui.");
+    await loadStats();
+    await loadPendingTopup();
+  } else {
+    alert(result.error);
+  }
 }
 
 window.addEventListener("load", async () => {
