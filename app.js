@@ -30,13 +30,47 @@ const userEmail = document.getElementById("userEmail");
 const creditValue = document.getElementById("creditValue");
 const resultBox = document.getElementById("result");
 
+const freeBtn = document.getElementById("freeBtn");
+const proBtn = document.getElementById("proBtn");
+const proDashboard = document.getElementById("proDashboard");
+
 const generateBtn = document.getElementById("generateBtn");
+
+/* =========================
+   MODE SYSTEM
+========================= */
+
+function updateModeUI(){
+  if(currentMode === "free"){
+    if(freeBtn) freeBtn.classList.add("active");
+    if(proBtn) proBtn.classList.remove("active");
+    if(proDashboard) proDashboard.style.display = "none";
+  } else {
+    if(proBtn) proBtn.classList.add("active");
+    if(freeBtn) freeBtn.classList.remove("active");
+    if(proDashboard) proDashboard.style.display = "block";
+  }
+}
+
+if(freeBtn){
+  freeBtn.onclick = ()=>{
+    currentMode = "free";
+    updateModeUI();
+  };
+}
+
+if(proBtn){
+  proBtn.onclick = ()=>{
+    currentMode = "pro";
+    updateModeUI();
+  };
+}
 
 /* =========================
    AUTH CHECK
 ========================= */
 
-async function checkUser() {
+async function checkUser(){
   const { data:{ user } } = await supabase.auth.getUser();
 
   if(user){
@@ -87,14 +121,16 @@ document.getElementById("registerBtn").onclick = async ()=>{
    LOGOUT
 ========================= */
 
-logoutBtn.onclick = async ()=>{
-  await supabase.auth.signOut();
-  currentUser = null;
-  await checkUser();
-};
+if(logoutBtn){
+  logoutBtn.onclick = async ()=>{
+    await supabase.auth.signOut();
+    currentUser = null;
+    await checkUser();
+  };
+}
 
 /* =========================
-   PROFILE LOAD
+   LOAD PROFILE
 ========================= */
 
 async function loadProfile(user){
@@ -110,21 +146,20 @@ async function loadProfile(user){
 }
 
 /* =========================
-   BUY CREDIT
+   BUY CREDIT (QRIS)
 ========================= */
 
-if (buyCreditBtn) {
+if(buyCreditBtn){
+  buyCreditBtn.onclick = async ()=>{
 
-  buyCreditBtn.onclick = async () => {
+    if(!currentUser) return alert("Login dulu.");
 
-    if (!currentUser) return alert("Login dulu.");
-
-    const uniqueCode = Math.floor(Math.random() * 90) + 10;
+    const uniqueCode = Math.floor(Math.random()*90)+10;
     const baseAmount = 20000;
     const finalAmount = baseAmount + uniqueCode;
 
     const expiredAt = new Date(
-      Date.now() + 15 * 60 * 1000
+      Date.now() + 15*60*1000
     ).toISOString();
 
     const { data, error } = await supabase
@@ -139,7 +174,7 @@ if (buyCreditBtn) {
       .select()
       .single();
 
-    if (error){
+    if(error){
       alert("Gagal membuat request");
       return;
     }
@@ -147,7 +182,7 @@ if (buyCreditBtn) {
     currentRequestId = data.id;
 
     document.getElementById("amountText").innerText =
-      "Transfer Rp" + finalAmount.toLocaleString() +
+      "Transfer Rp"+finalAmount.toLocaleString()+
       " untuk 100 Credit";
 
     qrisModal.style.display = "flex";
@@ -155,10 +190,10 @@ if (buyCreditBtn) {
 }
 
 /* =========================
-   CLOSE MODAL
+   CLOSE QRIS
 ========================= */
 
-if (closeQrisBtn){
+if(closeQrisBtn){
   closeQrisBtn.onclick = ()=>{
     qrisModal.style.display = "none";
   };
@@ -168,8 +203,7 @@ if (closeQrisBtn){
    CONFIRM PAYMENT
 ========================= */
 
-if (confirmPaymentBtn){
-
+if(confirmPaymentBtn){
   confirmPaymentBtn.onclick = async ()=>{
 
     if(!currentRequestId)
@@ -195,7 +229,34 @@ if (confirmPaymentBtn){
     qrisModal.style.display = "none";
 
     window.location.href =
-      "/payment-status.html?id=" + currentRequestId;
+      "/payment-status.html?id="+currentRequestId;
+  };
+}
+
+/* =========================
+   DAILY +10 CREDIT
+========================= */
+
+if(addCreditBtn){
+  addCreditBtn.onclick = async ()=>{
+    if(!currentUser) return alert("Login dulu.");
+
+    const { data: sessionData } = await supabase.auth.getSession();
+    const token = sessionData?.session?.access_token;
+
+    const response = await fetch("/api/add-credit",{
+      method:"POST",
+      headers:{ "Authorization":`Bearer ${token}` }
+    });
+
+    const data = await response.json();
+
+    if(response.ok){
+      await loadProfile(currentUser);
+      alert("10 Credit berhasil ditambahkan.");
+    } else {
+      alert(data.error);
+    }
   };
 }
 
@@ -203,44 +264,49 @@ if (confirmPaymentBtn){
    GENERATE AI
 ========================= */
 
-generateBtn.onclick = async ()=>{
+if(generateBtn){
+  generateBtn.onclick = async ()=>{
 
-  if(!currentUser) return alert("Login dulu.");
+    if(!currentUser) return alert("Login dulu.");
 
-  generateBtn.disabled = true;
-  resultBox.innerHTML = "Generating...";
+    generateBtn.disabled = true;
+    resultBox.innerHTML = "Generating...";
 
-  try{
-    const { data: sessionData } = await supabase.auth.getSession();
-    const token = sessionData?.session?.access_token;
+    try{
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData?.session?.access_token;
 
-    const response = await fetch("/api/generate", {
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json",
-        "Authorization":`Bearer ${token}`
-      }
-    });
+      const response = await fetch("/api/generate",{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "Authorization":`Bearer ${token}`
+        },
+        body: JSON.stringify({
+          mode: currentMode
+        })
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if(!response.ok) throw new Error(data.error);
+      if(!response.ok) throw new Error(data.error);
 
-    resultBox.innerHTML = data.result;
+      resultBox.innerHTML = data.result;
+      await loadProfile(currentUser);
 
-    await loadProfile(currentUser);
+    } catch(err){
+      resultBox.innerHTML = err.message;
+    }
 
-  } catch(err){
-    resultBox.innerHTML = err.message;
-  }
-
-  generateBtn.disabled = false;
-};
+    generateBtn.disabled = false;
+  };
+}
 
 /* =========================
    START
 ========================= */
 
+updateModeUI();
 await checkUser();
 
 });
