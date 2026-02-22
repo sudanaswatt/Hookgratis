@@ -168,7 +168,66 @@ async function loadHistory(){
     `;
   });
 }
+async function loadPendingTopup(){
 
+  if(!currentUser) return;
+
+  // Ganti email kamu di sini
+  const ADMIN_EMAIL = "sudanaswatt20@icloud.com";
+
+  if(currentUser.email !== ADMIN_EMAIL) return;
+
+  const { data } = await supabase
+    .from("topup_requests")
+    .select("*")
+    .eq("status", "pending")
+    .order("created_at", { ascending: false });
+
+  const adminBox = document.getElementById("adminTopupList");
+  if(!adminBox) return;
+
+  adminBox.innerHTML = "";
+
+  if(!data || data.length === 0){
+    adminBox.innerHTML = "<p>Tidak ada pending.</p>";
+    return;
+  }
+
+  data.forEach(item=>{
+    adminBox.innerHTML += `
+      <div style="margin-bottom:15px;padding:10px;background:#1e293b;border-radius:10px;">
+        <p><strong>User ID:</strong> ${item.user_id}</p>
+        <p><strong>Amount:</strong> Rp${item.amount}</p>
+        <p><strong>Credit:</strong> ${item.credit_amount}</p>
+        <button onclick="approveTopup('${item.id}')" class="generate-btn">
+          Approve
+        </button>
+      </div>
+    `;
+  });
+
+}
+
+window.approveTopup = async function(requestId){
+
+  const response = await fetch("/api/approve-topup", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ requestId })
+  });
+
+  const data = await response.json();
+
+  if(response.ok){
+    alert("Topup disetujui.");
+    loadPendingTopup();
+  } else {
+    alert(data.error);
+  }
+
+}
 /* =========================
    CHECK USER
 ========================= */
@@ -334,5 +393,5 @@ generateBtn.onclick = async () => {
 
 updateModeUI();
 await checkUser();
-
+await loadPendingTopup();
 });
