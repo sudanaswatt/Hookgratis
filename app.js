@@ -53,51 +53,61 @@ function generateUniqueAmount(base) {
    QRIS MODAL
 ========================= */
 
+/* =========================
+   QRIS MODAL
+========================= */
+
 const qrisModal = document.getElementById("qrisModal");
 const confirmPaymentBtn = document.getElementById("confirmPaymentBtn");
 const closeQrisBtn = document.getElementById("closeQrisBtn");
 
 if (buyCreditBtn && qrisModal) {
+
   buyCreditBtn.onclick = async () => {
 
-    if (!currentUser) {
-      alert("Login dulu.");
-      return;
-    }
+    if (!currentUser) return alert("Login dulu.");
 
+    // 1️⃣ Generate kode unik
+    const uniqueCode = Math.floor(Math.random() * 90) + 10;
     const baseAmount = 20000;
-    const finalAmount = generateUniqueAmount(baseAmount);
+    const finalAmount = baseAmount + uniqueCode;
 
+    // 2️⃣ Hitung expired 15 menit
+    const expiredAt = new Date(
+      Date.now() + 15 * 60 * 1000
+    ).toISOString();
+
+    // 3️⃣ Insert ke database
     const { data, error } = await supabase
       .from("topup_requests")
       .insert([{
         user_id: currentUser.id,
         amount: finalAmount,
         credit_amount: 100,
-        status: "waiting_payment"
+        status: "waiting_payment",
+        expired_at: expiredAt
       }])
       .select()
       .single();
 
     if (error) {
       alert("Gagal membuat request");
-      console.log(error);
       return;
     }
 
     currentRequestId = data.id;
-    currentAmount = finalAmount;
 
+    // 4️⃣ Update nominal di modal
     const amountText = document.getElementById("amountText");
     if (amountText) {
       amountText.innerText =
-        "Transfer Rp" + finalAmount.toLocaleString() + " untuk 100 Credit";
+        "Transfer Rp" + finalAmount.toLocaleString() +
+        " untuk 100 Credit";
     }
 
     qrisModal.style.display = "flex";
   };
 }
-
 
 if (closeQrisBtn && qrisModal) {
   closeQrisBtn.onclick = () => {
@@ -105,39 +115,52 @@ if (closeQrisBtn && qrisModal) {
   };
 }
 
-if (confirmPaymentBtn && qrisModal) {
+if (confirmPaymentBtn) {
+
   confirmPaymentBtn.onclick = async () => {
 
-    if (!currentUser) return alert("Login dulu.");
-
-    const { data: sessionData } = await supabase.auth.getSession();
-    const token = sessionData?.session?.access_token;
-    if (!token) return alert("Session expired.");
-
-    confirmPaymentBtn.disabled = true;
-
-    try {
-      const response = await fetch("/api/request-topup", {
-        method: "POST",
-        headers: { "Authorization": `Bearer ${token}` }
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        alert("Topup dikirim. Tunggu konfirmasi admin.");
-        qrisModal.style.display = "none";
-      } else {
-        alert(data.error || "Terjadi kesalahan.");
-      }
-    } catch (err) {
-      alert("Network error.");
+    if (!currentRequestId) {
+      alert("Request tidak ditemukan.");
+      return;
     }
 
-    confirmPaymentBtn.disabled = false;
+    // Ambil expired dulu
+    const { data, error } = await supabase
+      .from("topup_requests")
+      .select("expired_at")
+      .eq("id", currentRequestId)
+      .single();
+
+    if (error || !data) {
+      alert("Request tidak valid.");
+      return;
+    }
+
+    const now = new Date();
+    const expired = new Date(data.expired_at);
+
+    if (now > expired) {
+      alert("Waktu pembayaran sudah habis.");
+      return;
+    }
+
+    // Update jadi pending
+    const { error: updateError } = await supabase
+      .from("topup_requests")
+      .update({ status: "pending" })
+      .eq("id", currentRequestId);
+
+    if (updateError) {
+      alert("Gagal update status.");
+      return;
+    }
+
+    qrisModal.style.display = "none";
+
+    window.location.href =
+      "/payment-status.html?id=" + currentRequestId;
   };
 }
-
 /* =========================
    MODE SYSTEM
 ========================= */
