@@ -1,42 +1,117 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard</title>
-
-  <script defer src="https://unpkg.com/@supabase/supabase-js@2"></script>
-  <script defer src="admin.js"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <style>
     body{
-      font-family: Arial;
-      background:#0f172a;
+      margin:0;
+      font-family:Inter, Arial, sans-serif;
+      background:linear-gradient(135deg,#0f172a,#1e293b);
       color:white;
-      padding:30px;
+      padding:40px;
     }
+
     .card{
-      background:#1e293b;
+      background:rgba(255,255,255,.05);
       padding:20px;
-      border-radius:10px;
-      margin-bottom:15px;
+      border-radius:16px;
+      margin-bottom:20px;
+      border:1px solid rgba(255,255,255,.1);
+    }
+
+    h1{
+      margin-bottom:20px;
+    }
+
+    h3{
+      margin-bottom:10px;
     }
   </style>
 </head>
-
 <body>
 
-  <h1>Admin Dashboard</h1>
+<h1>Admin Dashboard</h1>
 
-  <div id="adminContent" style="display:none;">
-    <div class="card">
-      Admin berhasil login.
-    </div>
-  </div>
+<div class="card">
+  <p id="adminStatus">Checking admin...</p>
+</div>
 
-  <div id="notAdmin" style="display:none;">
-    Bukan admin.
-  </div>
+<div class="card">
+  <h3>Statistik</h3>
+  <p>Total User: <span id="totalUser">0</span></p>
+  <p>Generate Hari Ini: <span id="todayGenerate">0</span></p>
+  <p>Generate Bulan Ini: <span id="monthGenerate">0</span></p>
+  <p>Pending Topup: <span id="pendingTopup">0</span></p>
+</div>
+
+<script>
+
+const supabase = window.supabase.createClient(
+  "https://fvtqwxzkxzauyiaqpauu.supabase.co",
+  "YOUR_ANON_KEY_DISINI"
+);
+
+async function checkAdmin(){
+
+  const { data:{user} } = await supabase.auth.getUser();
+
+  if(!user){
+    document.getElementById("adminStatus").innerText = "Belum login.";
+    return;
+  }
+
+  const ADMIN_EMAIL = "sudanaswatt20@icloud.com";
+
+  if(user.email !== ADMIN_EMAIL){
+    document.getElementById("adminStatus").innerText = "Bukan admin.";
+    return;
+  }
+
+  document.getElementById("adminStatus").innerText = "Admin berhasil login.";
+
+  await loadStats();
+}
+
+async function loadStats(){
+
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  const firstDayMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
+  // Total User
+  const { count: userCount } = await supabase
+    .from("profiles")
+    .select("*", { count: "exact", head: true });
+
+  // Generate hari ini
+  const { count: todayCount } = await supabase
+    .from("generate_history")
+    .select("*", { count: "exact", head: true })
+    .gte("created_at", today.toISOString());
+
+  // Generate bulan ini
+  const { count: monthCount } = await supabase
+    .from("generate_history")
+    .select("*", { count: "exact", head: true })
+    .gte("created_at", firstDayMonth.toISOString());
+
+  // Pending topup
+  const { count: pendingCount } = await supabase
+    .from("topup_requests")
+    .select("*", { count: "exact", head: true })
+    .eq("status", "pending");
+
+  document.getElementById("totalUser").innerText = userCount || 0;
+  document.getElementById("todayGenerate").innerText = todayCount || 0;
+  document.getElementById("monthGenerate").innerText = monthCount || 0;
+  document.getElementById("pendingTopup").innerText = pendingCount || 0;
+}
+
+checkAdmin();
+
+</script>
 
 </body>
 </html>
