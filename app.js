@@ -74,14 +74,8 @@ async function checkUser(){
 
   const { data:{ user } } = await supabase.auth.getUser();
 
-  const adminSection = document.getElementById("adminSection");
-  const ADMIN_EMAIL = "sudanaswatt20@icloud.com";
-
   if(user){
-
     currentUser = user;
-
-    // tampilkan app
     loginModal.style.display = "none";
     appBox.style.display = "block";
     userEmail.innerText = user.email;
@@ -89,28 +83,10 @@ async function checkUser(){
     await loadProfile(user);
     await loadHistory();
 
-    // kontrol admin panel
-    if(adminSection){
-      if(user.email === ADMIN_EMAIL){
-        adminSection.style.display = "block";
-      } else {
-        adminSection.style.display = "none";
-      }
-    }
-
   } else {
-
     currentUser = null;
-
-    // tampilkan login
     loginModal.style.display = "flex";
     appBox.style.display = "none";
-
-    // pastikan admin panel tersembunyi saat logout
-    if(adminSection){
-      adminSection.style.display = "none";
-    }
-
   }
 }
 
@@ -171,21 +147,16 @@ async function loadProfile(user){
     .single();
 
   if(data){
-
     const credits = data.credits || 0;
-
-    if(creditValue)
-      creditValue.innerText = credits;
+    if(creditValue) creditValue.innerText = credits;
 
     const proCredit = document.getElementById("proCredit");
-
-    if(proCredit)
-      proCredit.innerText = credits;
-
+    if(proCredit) proCredit.innerText = credits;
   }
 }
+
 /* =========================
-   LOAD HISTORY
+   LOAD HISTORY (FINAL CLEAN)
 ========================= */
 
 async function loadHistory(){
@@ -215,44 +186,48 @@ async function loadHistory(){
 
   let expanded = false;
 
-function renderHistory(list){
+  function renderHistory(list){
 
-  historyList.innerHTML = "";
+    historyList.innerHTML = "";
 
-  list.forEach((item, index)=>{
+    list.forEach((item, index)=>{
 
-    const isFirst = index === 0;
-    const shouldOpen = expanded || isFirst;
+      const isFirst = index === 0;
+      const shouldOpen = expanded || isFirst;
 
-    historyList.innerHTML += `
-      <div class="history-item" style="margin-bottom:15px;">
-        <div style="font-size:12px;opacity:.6;">
-          ${item.mode === "pro" ? "AI Premium" : "AI Free"} • ${item.platform}
-        </div>
-
-        <div class="history-content ${shouldOpen ? "open" : ""}">
-          <div style="white-space:pre-line;margin-top:5px;">
-            ${item.result}
+      historyList.innerHTML += `
+        <div style="margin-bottom:15px;">
+          <div style="font-size:12px;opacity:.6;">
+            ${item.mode === "pro" ? "AI Premium" : "AI Free"} • ${item.platform}
           </div>
+
+          ${shouldOpen ? `
+            <div style="white-space:pre-line;margin-top:5px;">
+              ${item.result}
+            </div>
+          ` : ""}
         </div>
-      </div>
-    `;
-  });
+      `;
+    });
 
-  if(list.length > 1){
-    historyList.innerHTML += `
-      <button id="toggleHistoryBtn"
-        style="margin-top:10px;background:none;border:none;color:#8b5cf6;cursor:pointer;">
-        ${expanded ? "Tutup" : "Lihat Semua"}
-      </button>
-    `;
+    if(list.length > 1){
+      historyList.innerHTML += `
+        <button id="toggleHistoryBtn"
+          style="margin-top:10px;background:none;border:none;color:#8b5cf6;cursor:pointer;">
+          ${expanded ? "Tutup" : "Lihat Semua"}
+        </button>
+      `;
 
-    document.getElementById("toggleHistoryBtn").onclick = ()=>{
-      expanded = !expanded;
-      renderHistory(list);
-    };
+      document.getElementById("toggleHistoryBtn").onclick = ()=>{
+        expanded = !expanded;
+        renderHistory(list);
+      };
+    }
   }
+
+  renderHistory(data);
 }
+
 /* =========================
    BUY CREDIT (QRIS)
 ========================= */
@@ -342,33 +317,6 @@ if(confirmPaymentBtn){
 }
 
 /* =========================
-   DAILY +10 CREDIT
-========================= */
-
-if(addCreditBtn){
-  addCreditBtn.onclick = async ()=>{
-    if(!currentUser) return alert("Login dulu.");
-
-    const { data: sessionData } = await supabase.auth.getSession();
-    const token = sessionData?.session?.access_token;
-
-    const response = await fetch("/api/add-credit",{
-      method:"POST",
-      headers:{ "Authorization":`Bearer ${token}` }
-    });
-
-    const data = await response.json();
-
-    if(response.ok){
-      await loadProfile(currentUser);
-      alert("10 Credit berhasil ditambahkan.");
-    } else {
-      alert(data.error);
-    }
-  };
-}
-
-/* =========================
    GENERATE AI
 ========================= */
 
@@ -420,18 +368,16 @@ if(generateBtn){
       if(!response.ok) throw new Error(data.error);
 
       resultBox.innerHTML = `
-  <div class="mode-badge ${currentMode}">
-    ${currentMode === "pro" ? "AI Premium (Berbayar)" : "AI Free (Gratis)"}
-  </div>
-
-  <div style="white-space:pre-line; margin-top:10px;">
-    ${data.result}
-  </div>
-`;
+        <div style="font-size:12px;opacity:.6;margin-bottom:5px;">
+          ${currentMode === "pro" ? "AI Premium" : "AI Free"}
+        </div>
+        <div style="white-space:pre-line;">
+          ${data.result}
+        </div>
+      `;
 
       await loadProfile(currentUser);
       await loadHistory();
-      
 
     } catch(err){
       resultBox.innerHTML = err.message;
