@@ -260,51 +260,75 @@ if(buyCreditBtn){
 
     if(!currentUser) return alert("Login dulu.");
 
-    // 🔒 CEK apakah masih ada topup aktif
-    const { data: existing } = await supabase
-      .from("topup_requests")
-      .select("id,status")
-      .eq("user_id", currentUser.id)
-      .in("status", ["waiting_payment","pending"])
-      .maybeSingle();
+    // 🔒 Disable tombol supaya tidak bisa double click cepat
+    buyCreditBtn.disabled = true;
+    buyCreditBtn.innerText = "Memproses...";
 
-    if(existing){
-      alert("Masih ada pembayaran yang belum selesai.");
-      return;
+    try {
+
+      // 🔒 CEK apakah masih ada topup aktif
+      const { data: existingList, error: checkError } = await supabase
+        .from("topup_requests")
+        .select("id")
+        .eq("user_id", currentUser.id)
+        .in("status", ["waiting_payment","pending"]);
+
+      if(checkError){
+        alert("Gagal mengecek status topup.");
+        buyCreditBtn.disabled = false;
+        buyCreditBtn.innerText = "Beli 100 Credit";
+        return;
+      }
+
+      if(existingList && existingList.length > 0){
+        alert("Masih ada pembayaran yang belum selesai.");
+        buyCreditBtn.disabled = false;
+        buyCreditBtn.innerText = "Beli 100 Credit";
+        return;
+      }
+
+      const uniqueCode = Math.floor(Math.random()*90)+10;
+      const baseAmount = 10000;
+      const finalAmount = baseAmount + uniqueCode;
+
+      const expiredAt = new Date(
+        Date.now() + 15*60*1000
+      ).toISOString();
+
+      const { data, error } = await supabase
+        .from("topup_requests")
+        .insert([{
+          user_id: currentUser.id,
+          amount: finalAmount,
+          credit_amount: 100,
+          status: "waiting_payment",
+          expired_at: expiredAt
+        }])
+        .select()
+        .single();
+
+      if(error){
+        alert("Gagal membuat request.");
+        buyCreditBtn.disabled = false;
+        buyCreditBtn.innerText = "Beli 100 Credit";
+        return;
+      }
+
+      currentRequestId = data.id;
+
+      document.getElementById("amountText").innerText =
+        "Transfer Rp" + finalAmount.toLocaleString() +
+        " untuk 100 Credit";
+
+      qrisModal.style.display = "flex";
+
+    } catch(err){
+      alert("Terjadi kesalahan.");
     }
 
-    const uniqueCode = Math.floor(Math.random()*90)+10;
-    const baseAmount = 10000;
-    const finalAmount = baseAmount + uniqueCode;
-
-    const expiredAt = new Date(
-      Date.now() + 15*60*1000
-    ).toISOString();
-
-    const { data, error } = await supabase
-      .from("topup_requests")
-      .insert([{
-        user_id: currentUser.id,
-        amount: finalAmount,
-        credit_amount: 100,
-        status: "waiting_payment",
-        expired_at: expiredAt
-      }])
-      .select()
-      .single();
-
-    if(error){
-      alert("Gagal membuat request");
-      return;
-    }
-
-    currentRequestId = data.id;
-
-    document.getElementById("amountText").innerText =
-      "Transfer Rp"+finalAmount.toLocaleString()+
-      " untuk 100 Credit";
-
-    qrisModal.style.display = "flex";
+    // aktifkan kembali tombol
+    buyCreditBtn.disabled = false;
+    buyCreditBtn.innerText = "Beli 100 Credit";
   };
 }
 /* =========================
