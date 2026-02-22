@@ -8,9 +8,18 @@ export default async function handler(req, res) {
 
   try {
 
-    const { productName, productDesc, audience, style, platform, mode } = req.body;
+    const {
+      productName,
+      productDesc,
+      audience,
+      style,
+      platform,
+      mode,
+      duration,
+      category
+    } = req.body;
 
-    if (!productName || !audience || !style || !platform) {
+    if (!productName || !audience || !style || !platform || !mode) {
       return res.status(400).json({ error: "Field tidak lengkap." });
     }
 
@@ -24,9 +33,7 @@ export default async function handler(req, res) {
       process.env.SUPABASE_SERVICE_ROLE_KEY
     );
 
-    // =========================
-    // VALIDASI USER
-    // =========================
+    // ================= VALIDASI USER =================
 
     const { data: userData, error: userError } =
       await supabase.auth.getUser(token);
@@ -37,9 +44,7 @@ export default async function handler(req, res) {
 
     const userId = userData.user.id;
 
-    // =========================
-    // AMBIL PROFILE
-    // =========================
+    // ================= AMBIL PROFILE =================
 
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
@@ -52,67 +57,67 @@ export default async function handler(req, res) {
     }
 
     // =====================================================
-    // FREE MODE (Template Engine)
+    // FREE MODE (20 Variasi Panjang)
     // =====================================================
 
     if (mode === "free") {
 
-  const templates = [
+      const templates = [
 
-`Pernah merasa konten ${platform} kamu sepi interaksi padahal produknya bagus? ${productName} dirancang untuk ${audience} yang ingin tampil lebih percaya diri dan lebih konsisten tanpa harus pusing memikirkan konsep setiap hari.`,
+`Pernah merasa konten ${platform} kamu kurang mendapat perhatian? ${productName} hadir untuk ${audience} yang ingin tampil lebih percaya diri dan lebih konsisten tanpa harus memikirkan strategi rumit setiap hari.`,
 
-`Kalau kamu ${audience} yang ingin hasil lebih stabil di ${platform}, mungkin saatnya ubah pendekatan. ${productName} hadir sebagai solusi yang lebih praktis dan terarah untuk meningkatkan performa tanpa ribet.`,
+`${productName} dirancang untuk membantu ${audience} mendapatkan hasil yang lebih stabil di ${platform}. Dengan pendekatan yang lebih terarah, kamu bisa membangun performa yang lebih kuat.`,
 
-`Banyak ${audience} masih kesulitan membuat konten ${platform} yang benar-benar menarik perhatian. Dengan ${productName}, kamu bisa tampil lebih meyakinkan dan lebih terstruktur.`,
+`Jika kamu ${audience} yang ingin meningkatkan performa di ${platform}, ${productName} bisa menjadi langkah awal yang lebih terukur dan lebih efisien.`,
 
-`Sudah coba berbagai cara tapi performa ${platform} belum maksimal? ${productName} membantu ${audience} mendapatkan pendekatan yang lebih fokus dan relevan.`,
+`Persaingan di ${platform} semakin ketat. ${productName} membantu ${audience} tampil lebih relevan dan lebih menarik perhatian.`,
 
-`Daripada terus mencoba tanpa strategi jelas, ${productName} membantu ${audience} membangun performa yang lebih konsisten di ${platform}.`,
+`Daripada terus mencoba tanpa arah, ${productName} membantu ${audience} membangun strategi yang lebih konsisten di ${platform}.`,
 
-`Jika target kamu adalah ${audience}, maka pendekatan yang lebih tepat sangat penting. ${productName} membantu kamu tampil lebih menonjol di ${platform}.`,
+`${productName} bukan hanya sekadar produk, tetapi solusi untuk ${audience} yang ingin berkembang lebih cepat di ${platform}.`,
 
-`Konten ${platform} yang kuat selalu dimulai dari pesan yang jelas. ${productName} membantu ${audience} menyampaikan nilai dengan lebih efektif.`,
+`Konten yang kuat dimulai dari pesan yang jelas. ${productName} membantu ${audience} menyampaikan nilai produk dengan lebih efektif di ${platform}.`,
 
-`Banyak ${audience} gagal bukan karena produknya jelek, tapi karena penyampaian kurang tepat. ${productName} membantu memperkuat pesan kamu di ${platform}.`,
+`Jika performa ${platform} terasa stagnan, mungkin saatnya mencoba pendekatan baru dengan ${productName} yang dirancang untuk ${audience}.`,
 
-`Ingin tampil lebih profesional di ${platform}? ${productName} membantu ${audience} membangun kepercayaan lebih cepat.`,
+`${productName} membantu ${audience} membangun kepercayaan lebih cepat dan lebih konsisten di ${platform}.`,
 
-`Stop membuat konten tanpa arah. ${productName} membantu ${audience} memiliki pendekatan yang lebih sistematis di ${platform}.`,
+`Untuk ${audience} yang ingin hasil nyata di ${platform}, ${productName} menawarkan pendekatan yang lebih praktis dan lebih fokus.`,
 
-`Jika kamu ingin hasil yang lebih nyata di ${platform}, ${productName} bisa menjadi langkah awal yang lebih terukur untuk ${audience}.`,
+`${productName} hadir sebagai solusi untuk ${audience} yang ingin meningkatkan kualitas konten mereka di ${platform}.`,
 
-`Tidak perlu strategi rumit untuk berkembang di ${platform}. ${productName} memberikan solusi yang lebih simpel untuk ${audience}.`,
+`Tidak perlu strategi rumit untuk berkembang di ${platform}. ${productName} membantu ${audience} tampil lebih percaya diri.`,
 
-`Persaingan di ${platform} semakin ketat. ${productName} membantu ${audience} tampil lebih unggul dan lebih relevan.`,
+`${productName} membantu ${audience} mendapatkan pendekatan yang lebih terstruktur dan lebih profesional di ${platform}.`,
 
-`Banyak ${audience} sudah mulai beralih ke pendekatan yang lebih efektif. ${productName} membantu kamu tidak tertinggal di ${platform}.`,
+`Banyak ${audience} sudah mulai beralih ke solusi yang lebih efektif seperti ${productName} untuk meningkatkan performa di ${platform}.`,
 
-`Kunci sukses di ${platform} adalah konsistensi. ${productName} membantu ${audience} membangun fondasi yang lebih kuat.`,
+`${productName} memberikan fondasi yang lebih kuat bagi ${audience} yang ingin membangun kehadiran lebih solid di ${platform}.`,
 
-`Kalau performa ${platform} terasa stagnan, mungkin kamu butuh pendekatan baru. ${productName} membantu ${audience} bergerak lebih terarah.`,
+`Jika kamu serius ingin berkembang di ${platform}, ${productName} bisa membantu ${audience} mengambil langkah yang lebih tepat.`,
 
-`Konten yang kuat selalu memiliki struktur yang jelas. ${productName} membantu ${audience} membangun pesan yang lebih tajam di ${platform}.`,
+`${productName} membantu ${audience} mengoptimalkan potensi mereka di ${platform} tanpa harus membuang waktu mencoba hal yang tidak efektif.`,
 
-`Tidak semua ${audience} tahu cara memaksimalkan potensi mereka di ${platform}. ${productName} hadir sebagai solusi yang lebih terarah.`,
+`Daripada terus menebak strategi terbaik, ${productName} membantu ${audience} fokus pada pendekatan yang lebih konsisten di ${platform}.`,
 
-`Daripada terus menebak strategi terbaik, ${productName} membantu ${audience} fokus pada langkah yang benar di ${platform}.`,
+`${productName} dirancang untuk ${audience} yang ingin hasil lebih stabil dan lebih terukur di ${platform}.`,
 
-`Jika kamu serius ingin berkembang di ${platform}, ${productName} bisa membantu ${audience} mengambil langkah yang lebih pasti dan lebih konsisten.`
-  ];
+`Saatnya ${audience} mengambil langkah yang lebih pasti di ${platform} dengan bantuan ${productName} yang lebih terarah.`
+      ];
 
-  const result =
-    templates[Math.floor(Math.random() * templates.length)];
+      const result =
+        templates[Math.floor(Math.random() * templates.length)];
 
-  await supabase.from("generate_history").insert({
-    user_id: userId,
-    product_name: productName,
-    result,
-    mode: "free",
-    platform
-  });
+      await supabase.from("generate_history").insert({
+        user_id: userId,
+        product_name: productName,
+        result,
+        mode: "free",
+        platform
+      });
 
-  return res.status(200).json({ result });
-}
+      return res.status(200).json({ result });
+    }
 
     // =====================================================
     // PRO MODE (Potong Credit + AI)
@@ -134,7 +139,28 @@ export default async function handler(req, res) {
         return res.status(500).json({ error: "Gagal update credit." });
       }
 
-      // Panggil OpenRouter
+      const prompt = `
+Buat hook video ${duration || "5-10 detik"} yang powerfull dengan gaya bahasa creator Indonesia.
+
+Kategori: ${category || "Umum"}
+Produk: ${productName}
+Deskripsi: ${productDesc}
+Target Audience: ${audience}
+Platform: ${platform}
+Gaya Promosi: ${style}
+
+Format wajib:
+1 kalimat hook yang sangat menarik perhatian.
+1 paragraf solusi yang meyakinkan.
+1 kalimat CTA yang kuat.
+
+Aturan:
+- Tanpa emoji
+- Tanpa hashtag
+- Tanpa simbol dekoratif
+- Fokus penuh pada produk
+`;
+
       const response = await fetch(
         "https://openrouter.ai/api/v1/chat/completions",
         {
@@ -145,32 +171,7 @@ export default async function handler(req, res) {
           },
           body: JSON.stringify({
             model: "openai/gpt-4o-mini",
-            messages: [
-              {
-                role: "user",
-                content: `
-Buat hook video yang powerfull,${duration}
-dengan gaya bahasa creator Indonesia.
-dengan detail
-kategory: ${category}
-Produk: ${productName}
-Deskripsi: ${productDesc}
-Target: ${audience}
-Platform: ${platform}
-Gaya: ${style}
-
-Format:
-1 kalimat hook powefull
-1 paragraf solusi.
-1 kalimat CTA.
-
-Tanpa emoji.
-Tanpa hashtag.
-tanpa tambahan aneh aneh
-dan hanya fokus pada produk.
-`
-              }
-            ]
+            messages: [{ role: "user", content: prompt }]
           })
         }
       );
@@ -187,7 +188,6 @@ dan hanya fokus pada produk.
         aiData.choices?.[0]?.message?.content ||
         "Terjadi kesalahan pada AI.";
 
-      // simpan history
       await supabase.from("generate_history").insert({
         user_id: userId,
         product_name: productName,
