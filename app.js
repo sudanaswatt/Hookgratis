@@ -219,16 +219,21 @@ function renderHistory(list){
 
   historyList.innerHTML = "";
 
-  const itemsToShow = expanded ? list : [list[0]];
+  list.forEach((item, index)=>{
 
-  itemsToShow.forEach(item=>{
+    const isFirst = index === 0;
+    const shouldOpen = expanded || isFirst;
+
     historyList.innerHTML += `
-      <div style="margin-bottom:15px;">
+      <div class="history-item" style="margin-bottom:15px;">
         <div style="font-size:12px;opacity:.6;">
           ${item.mode === "pro" ? "AI Premium" : "AI Free"} • ${item.platform}
         </div>
-        <div style="white-space:pre-line;">
-          ${item.result}
+
+        <div class="history-content ${shouldOpen ? "open" : ""}">
+          <div style="white-space:pre-line;margin-top:5px;">
+            ${item.result}
+          </div>
         </div>
       </div>
     `;
@@ -248,8 +253,6 @@ function renderHistory(list){
     };
   }
 }
-
-renderHistory(data);
 /* =========================
    BUY CREDIT (QRIS)
 ========================= */
