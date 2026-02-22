@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+
+  <script defer src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script defer src="admin.js"></script>
+
+  <style>
+    body{
+      font-family: Arial;
+      background:#0f172a;
+      color:white;
+      padding:30px;
+    }
+    .card{
+      background:#1e293b;
+      padding:20px;
+      border-radius:10px;
+      margin-bottom:15px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Admin Dashboard</h1>
+
+  <div id="adminContent" style="display:none;">
+    <div class="card">
+      Admin berhasil login.
+    </div>
+  </div>
+
+  <div id="notAdmin" style="display:none;">
+    Bukan admin.
+  </div>
+
+</body>
+</html>
