@@ -86,6 +86,29 @@ h1{
 .approve-btn:active{
   transform:scale(0.97);
 }
+.stat-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+}
+
+.stat-box{
+  background:rgba(255,255,255,0.04);
+  padding:18px;
+  border-radius:16px;
+  text-align:center;
+}
+
+.stat-number{
+  font-size:26px;
+  font-weight:700;
+}
+
+.stat-text{
+  font-size:12px;
+  opacity:0.6;
+  margin-top:4px;
+}
   </style>
 </head>
 
@@ -102,24 +125,24 @@ h1{
 
   <div class="stat-grid">
 
-    <div class="stat-item">
-      <div class="stat-label">Total User</div>
-      <div class="stat-value" id="totalUser">0</div>
+    <div class="stat-box">
+      <div class="stat-number" id="totalUser">0</div>
+      <div class="stat-text">Total User</div>
     </div>
 
-    <div class="stat-item">
-      <div class="stat-label">Generate Hari Ini</div>
-      <div class="stat-value" id="todayGenerate">0</div>
+    <div class="stat-box">
+      <div class="stat-number" id="todayGenerate">0</div>
+      <div class="stat-text">Generate Hari Ini</div>
     </div>
 
-    <div class="stat-item">
-      <div class="stat-label">Generate Bulan Ini</div>
-      <div class="stat-value" id="monthGenerate">0</div>
+    <div class="stat-box">
+      <div class="stat-number" id="monthGenerate">0</div>
+      <div class="stat-text">Generate Bulan Ini</div>
     </div>
 
-    <div class="stat-item">
-      <div class="stat-label">Pending Topup</div>
-      <div class="stat-value" id="pendingTopup">0</div>
+    <div class="stat-box">
+      <div class="stat-number" id="pendingTopup">0</div>
+      <div class="stat-text">Pending Topup</div>
     </div>
 
   </div>
