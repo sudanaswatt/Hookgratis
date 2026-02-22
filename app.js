@@ -237,7 +237,7 @@ if(buyCreditBtn){
     if(!currentUser) return alert("Login dulu.");
 
     const uniqueCode = Math.floor(Math.random()*90)+10;
-    const baseAmount = 20000;
+    const baseAmount = 10000;
     const finalAmount = baseAmount + uniqueCode;
 
     const expiredAt = new Date(
