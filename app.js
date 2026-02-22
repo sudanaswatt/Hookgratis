@@ -19,7 +19,6 @@ let currentMode = "free";
 
 const loginModal = document.getElementById("loginModal");
 const logoutBtn = document.getElementById("logoutBtn");
-const addCreditBtn = document.getElementById("addCreditBtn");
 const buyCreditBtn = document.getElementById("buyCreditBtn");
 
 const appBox = document.getElementById("appBox");
@@ -42,7 +41,7 @@ const styleSelect = document.getElementById("style");
 const durationSelect = document.getElementById("duration");
 
 /* =========================
-   QRIS POPUP SYSTEM
+   QRIS MODAL
 ========================= */
 
 const qrisModal = document.getElementById("qrisModal");
@@ -70,19 +69,27 @@ if (confirmPaymentBtn && qrisModal) {
     const token = sessionData?.session?.access_token;
     if (!token) return alert("Session expired.");
 
-    const response = await fetch("/api/request-topup", {
-      method: "POST",
-      headers: { "Authorization": `Bearer ${token}` }
-    });
+    confirmPaymentBtn.disabled = true;
 
-    const data = await response.json();
+    try {
+      const response = await fetch("/api/request-topup", {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${token}` }
+      });
 
-    if (response.ok) {
-      alert("Topup dikirim. Tunggu konfirmasi admin.");
-      qrisModal.style.display = "none";
-    } else {
-      alert(data.error || "Terjadi kesalahan.");
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Topup dikirim. Tunggu konfirmasi admin.");
+        qrisModal.style.display = "none";
+      } else {
+        alert(data.error || "Terjadi kesalahan.");
+      }
+    } catch (err) {
+      alert("Network error.");
     }
+
+    confirmPaymentBtn.disabled = false;
   };
 }
 
@@ -117,18 +124,20 @@ proBtn.onclick = () => {
 ========================= */
 
 async function loadProfile(user){
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("credits")
-    .eq("id", user.id)
-    .single();
+  try{
+    const { data } = await supabase
+      .from("profiles")
+      .select("credits")
+      .eq("id", user.id)
+      .single();
 
-  if(error) return;
-
-  if(data){
-    currentCredit = data.credits;
-    creditValue.innerText = data.credits;
-    if(proCredit) proCredit.innerText = data.credits;
+    if(data){
+      currentCredit = data.credits;
+      if(creditValue) creditValue.innerText = data.credits;
+      if(proCredit) proCredit.innerText = data.credits;
+    }
+  } catch(err){
+    console.error("Load profile error", err);
   }
 }
 
@@ -169,7 +178,7 @@ async function loadHistory(){
 }
 
 /* =========================
-   ADMIN TOPUP
+   ADMIN PANEL
 ========================= */
 
 async function loadPendingTopup(){
@@ -197,8 +206,8 @@ async function loadPendingTopup(){
 
   data.forEach(item=>{
     adminBox.innerHTML += `
-      <div style="margin-bottom:15px;padding:10px;background:#1e293b;border-radius:10px;">
-        <p><strong>User ID:</strong> ${item.user_id}</p>
+      <div>
+        <p><strong>User:</strong> ${item.user_id}</p>
         <p><strong>Amount:</strong> Rp${item.amount}</p>
         <p><strong>Credit:</strong> ${item.credit_amount}</p>
         <button onclick="approveTopup('${item.id}')" class="generate-btn">
@@ -207,29 +216,33 @@ async function loadPendingTopup(){
       </div>
     `;
   });
-
 }
 
 window.approveTopup = async function(requestId){
 
-  const response = await fetch("/api/approve-topup", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ requestId })
-  });
+  try{
+    const response = await fetch("/api/approve-topup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ requestId })
+    });
 
-  const data = await response.json();
+    const data = await response.json();
 
-  if(response.ok){
-    alert("Topup disetujui.");
-    await loadPendingTopup();
-  } else {
-    alert(data.error);
+    if(response.ok){
+      alert("Topup disetujui.");
+      await loadPendingTopup();
+      await loadProfile(currentUser);
+    } else {
+      alert(data.error);
+    }
+  } catch(err){
+    alert("Network error.");
   }
 };
 
 /* =========================
-   CHECK USER
+   AUTH CHECK
 ========================= */
 
 async function checkUser(){
@@ -245,7 +258,7 @@ async function checkUser(){
 
     await loadProfile(user);
     await loadHistory();
-    await loadPendingTopup(); // 🔥 penting
+    await loadPendingTopup();
 
   } else {
 
@@ -299,6 +312,7 @@ logoutBtn.onclick = async ()=>{
 
 generateBtn.onclick = async () => {
 
+  if(generateBtn.disabled) return;
   if(!currentUser) return alert("Login dulu.");
 
   const name = document.getElementById("productName").value.trim();
@@ -315,51 +329,48 @@ generateBtn.onclick = async () => {
   generateBtn.disabled = true;
   resultBox.innerHTML = "Generating...";
 
-  const { data: sessionData } = await supabase.auth.getSession();
-  const token = sessionData?.session?.access_token;
+  try{
+    const { data: sessionData } = await supabase.auth.getSession();
+    const token = sessionData?.session?.access_token;
+    if(!token) throw new Error("Session expired");
 
-  if(!token){
-    generateBtn.disabled = false;
-    return alert("Session expired.");
+    const response = await fetch("/api/generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        productName: name,
+        productDesc: desc,
+        category,
+        audience,
+        style,
+        platform,
+        duration,
+        mode: currentMode
+      })
+    });
+
+    const data = await response.json();
+
+    if(!response.ok) throw new Error(data.error);
+
+    resultBox.innerHTML = `
+      <div class="mode-badge ${currentMode}">
+        ${currentMode === "pro" ? "AI Premium (Berbayar)" : "AI Free (Gratis)"}
+      </div>
+      <div style="white-space:pre-line;">
+        ${data.result}
+      </div>
+    `;
+
+    await loadProfile(currentUser);
+    await loadHistory();
+
+  } catch(err){
+    resultBox.innerHTML = err.message || "Terjadi kesalahan.";
   }
-
-  const response = await fetch("/api/generate", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
-    },
-    body: JSON.stringify({
-      productName: name,
-      productDesc: desc,
-      category,
-      audience,
-      style,
-      platform,
-      duration,
-      mode: currentMode
-    })
-  });
-
-  const data = await response.json();
-
-  if(!response.ok){
-    resultBox.innerHTML = data.error || "Terjadi kesalahan.";
-    generateBtn.disabled = false;
-    return;
-  }
-
-  resultBox.innerHTML = `
-    <div class="mode-badge ${currentMode}">
-      ${currentMode === "pro" ? "AI Premium (Berbayar)" : "AI Free (Gratis)"}
-    </div>
-    <div style="white-space:pre-line;">
-      ${data.result}
-    </div>
-  `;
-
-  await loadProfile(currentUser);
-  await loadHistory();
 
   generateBtn.disabled = false;
 };
