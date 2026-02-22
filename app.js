@@ -6,7 +6,7 @@ window.addEventListener("load", async () => {
 
 const supabase = window.supabase.createClient(
   "https://fvtqwxzkxzauyiaqpauu.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2dHF3eHpreHphdXlpYXFwYXV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2MzkyMDksImV4cCI6MjA4NzIxNTIwOX0.d1s0att2MuxyFBx5v7lYhGOkQdGe-viUCNRw_HXs4Rk"
+  "YOUR_PUBLIC_ANON_KEY"
 );
 
 let currentUser = null;
@@ -68,7 +68,6 @@ if (confirmPaymentBtn && qrisModal) {
 
     const { data: sessionData } = await supabase.auth.getSession();
     const token = sessionData?.session?.access_token;
-
     if (!token) return alert("Session expired.");
 
     const response = await fetch("/api/request-topup", {
@@ -168,13 +167,16 @@ async function loadHistory(){
     `;
   });
 }
+
+/* =========================
+   ADMIN TOPUP
+========================= */
+
 async function loadPendingTopup(){
 
   if(!currentUser) return;
 
-  // Ganti email kamu di sini
   const ADMIN_EMAIL = "sudanaswatt20@icloud.com";
-
   if(currentUser.email !== ADMIN_EMAIL) return;
 
   const { data } = await supabase
@@ -212,9 +214,7 @@ window.approveTopup = async function(requestId){
 
   const response = await fetch("/api/approve-topup", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ requestId })
   });
 
@@ -222,20 +222,22 @@ window.approveTopup = async function(requestId){
 
   if(response.ok){
     alert("Topup disetujui.");
-    loadPendingTopup();
+    await loadPendingTopup();
   } else {
     alert(data.error);
   }
+};
 
-}
 /* =========================
    CHECK USER
 ========================= */
 
 async function checkUser(){
+
   const { data:{user} } = await supabase.auth.getUser();
 
   if(user){
+
     currentUser = user;
     loginModal.style.display="none";
     appBox.style.display="block";
@@ -243,10 +245,13 @@ async function checkUser(){
 
     await loadProfile(user);
     await loadHistory();
+    await loadPendingTopup(); // 🔥 penting
 
   } else {
+
     loginModal.style.display="flex";
     appBox.style.display="none";
+
   }
 }
 
@@ -287,34 +292,6 @@ logoutBtn.onclick = async ()=>{
   resultBox.innerHTML="Hook akan muncul di sini...";
   await checkUser();
 };
-
-/* =========================
-   ADD CREDIT (Manual)
-========================= */
-
-if(addCreditBtn){
-  addCreditBtn.onclick = async () => {
-
-    if(!currentUser) return alert("Login dulu.");
-
-    const { data: sessionData } = await supabase.auth.getSession();
-    const token = sessionData?.session?.access_token;
-
-    const response = await fetch("/api/add-credit", {
-      method: "POST",
-      headers: { "Authorization": `Bearer ${token}` }
-    });
-
-    const data = await response.json();
-
-    if(response.ok){
-      await loadProfile(currentUser);
-      alert("Credit ditambahkan.");
-    } else {
-      alert(data.error || "Gagal tambah credit.");
-    }
-  };
-}
 
 /* =========================
    GENERATE
@@ -393,5 +370,5 @@ generateBtn.onclick = async () => {
 
 updateModeUI();
 await checkUser();
-await loadPendingTopup();
+
 });
