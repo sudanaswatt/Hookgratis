@@ -13,6 +13,11 @@ let currentUser = null;
 let currentMode = "free";
 let currentRequestId = null;
 
+supabase.auth.onAuthStateChange((event, session) => {
+  if(session?.user){
+    checkUser();
+  }
+});
 /* =========================
    ELEMENT
 ========================= */
@@ -97,10 +102,17 @@ document.getElementById("loginBtn").onclick = async ()=>{
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password
+  });
 
   if(error){
-    alert(error.message);
+    if(error.message.toLowerCase().includes("email")){
+      alert("Email belum dikonfirmasi. Silakan cek inbox.");
+    } else {
+      alert(error.message);
+    }
     return;
   }
 
@@ -116,12 +128,19 @@ document.getElementById("registerBtn").onclick = async ()=>{
   const password = document.getElementById("password").value;
 
   const { data, error } = await supabase.auth.signUp({
-  email,
-  password,
-  options: {
-    emailRedirectTo: window.location.origin
+    email,
+    password,
+    options: {
+      emailRedirectTo: window.location.origin
+    }
+  });
+
+  if(error){
+    alert(error.message);
+  } else {
+    alert("Akun berhasil dibuat. Silakan cek email untuk konfirmasi sebelum login.");
   }
-});
+};
 
 /* =========================
    LOGOUT
@@ -141,21 +160,24 @@ if(logoutBtn){
 
 async function loadProfile(user){
 
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("profiles")
     .select("credits")
     .eq("id", user.id)
     .single();
 
-  if(data){
-    const credits = data.credits || 0;
-    if(creditValue) creditValue.innerText = credits;
-
-    const proCredit = document.getElementById("proCredit");
-    if(proCredit) proCredit.innerText = credits;
+  if(error || !data){
+    console.log("Profile belum ada.");
+    return;
   }
-}
 
+  const credits = data.credits || 0;
+
+  if(creditValue) creditValue.innerText = credits;
+
+  const proCredit = document.getElementById("proCredit");
+  if(proCredit) proCredit.innerText = credits;
+}
 /* =========================
    LOAD HISTORY (FINAL CLEAN)
 ========================= */
