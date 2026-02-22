@@ -20,6 +20,7 @@ let currentMode = "free";
 const loginModal = document.getElementById("loginModal");
 const logoutBtn = document.getElementById("logoutBtn");
 const buyCreditBtn = document.getElementById("buyCreditBtn");
+const addCreditBtn = document.getElementById("addCreditBtn");
 
 const appBox = document.getElementById("appBox");
 const userEmail = document.getElementById("userEmail");
