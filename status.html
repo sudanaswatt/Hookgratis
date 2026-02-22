@@ -54,6 +54,7 @@ async function loadStatus(){
 
   if(!requestId){
     statusText.innerText = "ID pembayaran tidak ditemukan.";
+    waBtn.style.display = "none";
     return;
   }
 
@@ -61,40 +62,50 @@ async function loadStatus(){
     .from("topup_requests")
     .select("*")
     .eq("id", requestId)
-    .single();
+    .maybeSingle();   // ⬅ lebih aman dari single()
 
-  if(error || !data){
-    statusText.innerText = "Data tidak ditemukan.";
+  if(error){
+    statusText.innerText = "Terjadi kesalahan sistem.";
     return;
   }
 
-  amountText.innerText = "Jumlah: Rp " + data.amount.toLocaleString();
-
-  if(data.status === "waiting_payment"){
-    statusText.innerText = "Menunggu pembayaran.";
-  }
-
-  if(data.status === "pending"){
-    statusText.innerText = "Pembayaran sedang diverifikasi admin.";
-  }
-
-  if(data.status === "approved"){
-    statusText.innerText = "Pembayaran berhasil! Credit sudah ditambahkan.";
+  if(!data){
+    statusText.innerText = "Data pembayaran tidak ditemukan.";
     waBtn.style.display = "none";
+    return;
   }
 
-  if(data.status === "rejected"){
-    statusText.innerText = "Pembayaran ditolak. Hubungi admin.";
+  amountText.innerText = "Jumlah: Rp " + Number(data.amount).toLocaleString();
+
+  switch(data.status){
+    case "waiting_payment":
+      statusText.innerText = "Menunggu pembayaran.";
+      break;
+
+    case "pending":
+      statusText.innerText = "Pembayaran sedang diverifikasi admin.";
+      break;
+
+    case "approved":
+      statusText.innerText = "Pembayaran berhasil! Credit sudah ditambahkan.";
+      waBtn.style.display = "none";
+      break;
+
+    case "rejected":
+      statusText.innerText = "Pembayaran ditolak. Hubungi admin.";
+      break;
+
+    default:
+      statusText.innerText = "Status tidak diketahui.";
   }
 }
 
-// auto refresh setiap 5 detik
+loadStatus();
 setInterval(loadStatus, 5000);
 
-loadStatus();
-
-// tombol WA
 waBtn.onclick = ()=>{
+  if(!requestId) return;
+
   const message = `Halo admin, saya sudah transfer dengan ID: ${requestId}`;
   window.open(
     `https://wa.me/6281523779397?text=${encodeURIComponent(message)}`,
