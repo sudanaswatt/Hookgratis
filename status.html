@@ -39,14 +39,23 @@
 <script>
 document.addEventListener("DOMContentLoaded", () => {
 
+  const statusText = document.getElementById("statusText");
+  const amountText = document.getElementById("amountText");
+  const waBtn = document.getElementById("waBtn");
+
   const urlParams = new URLSearchParams(window.location.search);
   const requestId = urlParams.get("id");
 
-  const waBtn = document.getElementById("waBtn");
+  statusText.innerText =
+    "Terima kasih 🙏 Pembayaran Anda sedang kami proses.";
+
+  amountText.innerText =
+    "Silakan klik tombol WhatsApp untuk konfirmasi ke admin.";
 
   waBtn.addEventListener("click", () => {
 
-    let message = "Halo admin, saya sudah melakukan pembayaran.";
+    let message =
+      "Halo admin, saya sudah melakukan pembayaran.";
 
     if(requestId){
       message += ` ID Pembayaran: ${requestId}`;
