@@ -134,17 +134,27 @@ if(logoutBtn){
 ========================= */
 
 async function loadProfile(user){
+
   const { data } = await supabase
     .from("profiles")
     .select("credits")
     .eq("id", user.id)
     .single();
 
-  if(data && creditValue){
-    creditValue.innerText = data.credits;
+  if(data){
+
+    const credits = data.credits || 0;
+
+    if(creditValue)
+      creditValue.innerText = credits;
+
+    const proCredit = document.getElementById("proCredit");
+
+    if(proCredit)
+      proCredit.innerText = credits;
+
   }
 }
-
 /* =========================
    BUY CREDIT (QRIS)
 ========================= */
