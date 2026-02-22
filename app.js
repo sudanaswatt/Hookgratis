@@ -260,6 +260,19 @@ if(buyCreditBtn){
 
     if(!currentUser) return alert("Login dulu.");
 
+    // 🔒 CEK apakah masih ada topup aktif
+    const { data: existing } = await supabase
+      .from("topup_requests")
+      .select("id,status")
+      .eq("user_id", currentUser.id)
+      .in("status", ["waiting_payment","pending"])
+      .maybeSingle();
+
+    if(existing){
+      alert("Masih ada pembayaran yang belum selesai.");
+      return;
+    }
+
     const uniqueCode = Math.floor(Math.random()*90)+10;
     const baseAmount = 10000;
     const finalAmount = baseAmount + uniqueCode;
@@ -294,7 +307,6 @@ if(buyCreditBtn){
     qrisModal.style.display = "flex";
   };
 }
-
 /* =========================
    CLOSE QRIS
 ========================= */
