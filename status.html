@@ -37,83 +37,25 @@
 </div>
 
 <script>
-
-document.addEventListener("DOMContentLoaded", async () => {
-
-  console.log("Status page running");
-
-  const supabase = window.supabase.createClient(
-    "https://fvtqwxzkxzauyiaqpauu.supabase.co",
-    "YOUR_ANON_KEY"
-  );
-
-  const urlParams = new URLSearchParams(window.location.search);
-  const requestId = urlParams.get("id");
+document.addEventListener("DOMContentLoaded", () => {
 
   const statusText = document.getElementById("statusText");
   const amountText = document.getElementById("amountText");
   const waBtn = document.getElementById("waBtn");
 
-  if(!requestId){
-    statusText.innerText = "ID pembayaran tidak ditemukan.";
-    waBtn.style.display = "none";
-    return;
-  }
+  statusText.innerText = "Terima kasih 🙏 Pembayaran Anda sedang kami proses.";
 
-  async function loadStatus(){
-
-    const { data, error } = await supabase
-      .from("topup_requests")
-      .select("*")
-      .eq("id", requestId)
-      .maybeSingle();
-
-    if(error){
-      statusText.innerText = "Terjadi kesalahan sistem.";
-      return;
-    }
-
-    if(!data){
-      statusText.innerText = "Data pembayaran tidak ditemukan.";
-      waBtn.style.display = "none";
-      return;
-    }
-
-    amountText.innerText =
-      "Jumlah: Rp " + Number(data.amount).toLocaleString();
-
-    if(data.status === "waiting_payment"){
-      statusText.innerText = "Menunggu pembayaran.";
-    }
-
-    if(data.status === "pending"){
-      statusText.innerText = "Pembayaran sedang diverifikasi admin.";
-    }
-
-    if(data.status === "approved"){
-      statusText.innerText =
-        "Pembayaran berhasil! Credit sudah ditambahkan.";
-      waBtn.style.display = "none";
-    }
-
-    if(data.status === "rejected"){
-      statusText.innerText =
-        "Pembayaran ditolak. Hubungi admin.";
-    }
-  }
+  amountText.innerText =
+    "Tim admin akan segera memverifikasi pembayaran Anda.";
 
   waBtn.addEventListener("click", () => {
     const message =
-      `Halo admin, saya sudah transfer dengan ID: ${requestId}`;
+      "Halo admin, saya sudah melakukan pembayaran dan ingin konfirmasi.";
     window.location.href =
       `https://wa.me/6281523779397?text=${encodeURIComponent(message)}`;
   });
 
-  await loadStatus();
-  setInterval(loadStatus, 5000);
-
 });
-
 </script>
 </body>
 </html>
