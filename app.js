@@ -87,6 +87,7 @@ async function checkUser(){
     userEmail.innerText = user.email;
 
     await loadProfile(user);
+    await loadHistory();
 
     // kontrol admin panel
     if(adminSection){
@@ -397,6 +398,7 @@ if(generateBtn){
 `;
 
       await loadProfile(currentUser);
+      await loadHistory();
       
 
     } catch(err){
