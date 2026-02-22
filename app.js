@@ -321,7 +321,15 @@ if(generateBtn){
 
       if(!response.ok) throw new Error(data.error);
 
-      resultBox.innerHTML = data.result;
+      resultBox.innerHTML = `
+  <div class="mode-badge ${currentMode}">
+    ${currentMode === "pro" ? "AI Premium (Berbayar)" : "AI Free (Gratis)"}
+  </div>
+
+  <div style="white-space:pre-line; margin-top:10px;">
+    ${data.result}
+  </div>
+`;
 
       await loadProfile(currentUser);
 
