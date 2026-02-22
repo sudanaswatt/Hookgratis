@@ -20,7 +20,6 @@ let currentRequestId = null;
 const loginModal = document.getElementById("loginModal");
 const logoutBtn = document.getElementById("logoutBtn");
 const buyCreditBtn = document.getElementById("buyCreditBtn");
-const addCreditBtn = document.getElementById("addCreditBtn");
 const confirmPaymentBtn = document.getElementById("confirmPaymentBtn");
 const closeQrisBtn = document.getElementById("closeQrisBtn");
 
@@ -313,54 +312,6 @@ if(confirmPaymentBtn){
 
     window.location.href =
       "/status.html?id="+currentRequestId;
-  };
-}
-
-/* =========================
-   DAILY +10 CREDIT
-========================= */
-
-if(addCreditBtn){
-  addCreditBtn.onclick = async ()=>{
-
-    if(!currentUser) return alert("Login dulu.");
-
-    addCreditBtn.disabled = true;
-    addCreditBtn.innerText = "Loading...";
-
-    try{
-
-      const { data: sessionData } = await supabase.auth.getSession();
-      const token = sessionData?.session?.access_token;
-
-      const response = await fetch("/api/add-credit",{
-        method:"POST",
-        headers:{ 
-          "Authorization":`Bearer ${token}` 
-        }
-      });
-
-      const data = await response.json();
-
-      if(!response.ok) throw new Error(data.error);
-
-      await loadProfile(currentUser);
-
-      addCreditBtn.innerText = "✓ Berhasil";
-      addCreditBtn.style.background = "#16a34a";
-
-      setTimeout(()=>{
-        addCreditBtn.innerText = "+10 Credit";
-        addCreditBtn.style.background = "";
-        addCreditBtn.disabled = false;
-      },2000);
-
-    } catch(err){
-      alert(err.message);
-      addCreditBtn.innerText = "+10 Credit";
-      addCreditBtn.disabled = false;
-    }
-
   };
 }
 
