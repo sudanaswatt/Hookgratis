@@ -347,3 +347,17 @@ textarea{
   }
 
 }
+.history-item {
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.history-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+
+.history-content.open {
+  max-height: 1000px; /* cukup besar */
+}
