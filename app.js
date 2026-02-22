@@ -115,11 +115,13 @@ document.getElementById("registerBtn").onclick = async ()=>{
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
-  const { error } = await supabase.auth.signUp({ email, password });
-
-  if(error) alert(error.message);
-  else alert("Cek email konfirmasi.");
-};
+  const { data, error } = await supabase.auth.signUp({
+  email,
+  password,
+  options: {
+    emailRedirectTo: window.location.origin
+  }
+});
 
 /* =========================
    LOGOUT
