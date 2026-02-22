@@ -239,7 +239,7 @@ if(confirmPaymentBtn){
     qrisModal.style.display = "none";
 
     window.location.href =
-      "/payment-status.html?id="+currentRequestId;
+      "/status.html?id="+currentRequestId;
   };
 }
 
