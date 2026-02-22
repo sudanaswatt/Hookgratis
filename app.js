@@ -184,6 +184,43 @@ async function loadProfile(user){
   }
 }
 /* =========================
+   LOAD HISTORY
+========================= */
+
+async function loadHistory(){
+
+  if(!currentUser) return;
+
+  const { data, error } = await supabase
+    .from("generate_history")
+    .select("*")
+    .eq("user_id", currentUser.id)
+    .order("created_at", { ascending: false });
+
+  const historyList = document.getElementById("historyList");
+  if(!historyList) return;
+
+  historyList.innerHTML = "";
+
+  if(error || !data || data.length === 0){
+    historyList.innerHTML = "<p>Belum ada riwayat.</p>";
+    return;
+  }
+
+  data.forEach(item=>{
+    historyList.innerHTML += `
+      <div style="margin-bottom:15px;">
+        <div style="font-size:12px;opacity:.6;">
+          ${item.mode === "pro" ? "AI Premium" : "AI Free"} • ${item.platform}
+        </div>
+        <div style="white-space:pre-line;">
+          ${item.result}
+        </div>
+      </div>
+    `;
+  });
+}
+/* =========================
    BUY CREDIT (QRIS)
 ========================= */
 
@@ -360,6 +397,7 @@ if(generateBtn){
 `;
 
       await loadProfile(currentUser);
+      
 
     } catch(err){
       resultBox.innerHTML = err.message;
