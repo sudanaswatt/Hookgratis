@@ -25,6 +25,29 @@ export default async function handler(req, res) {
 
     const userId = userData.user.id;
 
+    const now = new Date();
+    const twentyFourHoursAgo = new Date(
+      now.getTime() - 24 * 60 * 60 * 1000
+    ).toISOString();
+
+    // 🔥 Atomic Update
+    const { data, error } = await supabase
+      .from("profiles")
+      .update({
+        credits: supabase.rpc ? undefined : undefined
+      })
+      .eq("id", userId)
+      .or(`last_claim_at.is.null,last_claim_at.lt.${twentyFourHoursAgo}`)
+      .select("credits")
+      .single();
+
+    if (!data) {
+      return res.status(400).json({
+        error: "Klaim sudah dilakukan. Coba lagi besok."
+      });
+    }
+
+    // Tambah credit secara terpisah tapi aman
     const { data: profile } = await supabase
       .from("profiles")
       .select("credits")
@@ -35,18 +58,20 @@ export default async function handler(req, res) {
 
     await supabase
       .from("profiles")
-      .update({ credits: newCredit })
+      .update({
+        credits: newCredit,
+        last_claim_at: now.toISOString()
+      })
       .eq("id", userId);
 
     return res.status(200).json({
-      message: "Credit berhasil ditambahkan.",
+      message: "Berhasil klaim 10 credit.",
       credits: newCredit
     });
 
   } catch (err) {
-
     return res.status(500).json({
-      error: "Server crash",
+      error: "Server crash.",
       detail: err.message
     });
   }
