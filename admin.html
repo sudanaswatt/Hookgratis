@@ -158,34 +158,39 @@ const supabaseClient = createClient(
 
 async function checkAdmin(){
 
-  try {
+  const { data: sessionData, error } =
+    await supabaseClient.auth.getSession();
 
-    const { data: sessionData } =
-  await supabaseClient.auth.getSession();
-
-const user = sessionData?.session?.user;
-
-    if(!user){
-      document.getElementById("adminStatus").innerText =
-        "Belum login. Login dulu di halaman utama.";
-      return;
-    }
-
-    const ADMIN_EMAIL = "sudanaswatt20@icloud.com";
-
-    if(user.email !== ADMIN_EMAIL){
-      document.getElementById("adminStatus").innerText =
-        "Bukan admin.";
-      return;
-    }
-
+  if(error){
     document.getElementById("adminStatus").innerText =
-  "Admin berhasil login.";
+      "Session tidak ditemukan.";
+    return;
+  }
 
-await loadStats();
-await loadPendingTopup();
+  const user = sessionData?.session?.user;
 
-  } catch(err){
+  if(!user){
+    document.getElementById("adminStatus").innerText =
+      "Belum login. Login dulu di halaman utama.";
+    return;
+  }
+
+  const ADMIN_EMAIL = "sudanaswatt20@icloud.com";
+
+  if(user.email !== ADMIN_EMAIL){
+    document.getElementById("adminStatus").innerText =
+      "Bukan admin.";
+    return;
+  }
+
+  document.getElementById("adminStatus").innerText =
+    "Admin berhasil login.";
+
+  await loadStats();
+  await loadPendingTopup();
+}
+
+ catch(err){
     document.getElementById("adminStatus").innerText =
       "Error membaca session.";
   }
