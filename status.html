@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Status Pembayaran</title>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <style>
+    body{
+      margin:0;
+      font-family:Arial, sans-serif;
+      background:linear-gradient(135deg,#0f172a,#1e293b);
+      color:white;
+      padding:20px;
+      text-align:center;
+    }
+    .card{
+      background:rgba(255,255,255,0.05);
+      padding:25px;
+      border-radius:20px;
+      margin-top:40px;
+    }
+    .status{
+      font-size:22px;
+      font-weight:bold;
+      margin:15px 0;
+    }
+    .pending{ color:orange; }
+    .approved{ color:#22c55e; }
+    .waiting{ color:#60a5fa; }
+
+    .btn{
+      display:block;
+      width:100%;
+      padding:14px;
+      margin-top:15px;
+      border:none;
+      border-radius:12px;
+      font-weight:bold;
+      font-size:16px;
+      cursor:pointer;
+    }
+    .wa{
+      background:#25D366;
+      color:white;
+    }
+    .back{
+      background:#6366f1;
+      color:white;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Status Pembayaran</h2>
+
+<div class="card">
+  <div id="amountText"></div>
+  <div id="creditText"></div>
+  <div id="statusText" class="status"></div>
+
+  <button id="waBtn" class="btn wa">
+    Chat Admin WhatsApp
+  </button>
+
+  <button onclick="window.location.href='/'"
+    class="btn back">
+    Kembali ke Dashboard
+  </button>
+</div>
+
+<script>
+
+const supabase = window.supabase.createClient(
+  "https://fvtqwxzkxzauyiaqpauu.supabase.co",
+  "YOUR_PUBLIC_ANON_KEY"
+);
+
+const urlParams = new URLSearchParams(window.location.search);
+const requestId = urlParams.get("id");
+
+if(!requestId){
+  document.body.innerHTML = "Request ID tidak ditemukan.";
+}
+
+async function loadStatus(){
+
+  const { data, error } = await supabase
+    .from("topup_requests")
+    .select("*")
+    .eq("id", requestId)
+    .single();
+
+  if(error || !data){
+    document.body.innerHTML = "Data tidak ditemukan.";
+    return;
+  }
+
+  document.getElementById("amountText").innerText =
+    "Nominal Transfer: Rp " + data.amount.toLocaleString();
+
+  document.getElementById("creditText").innerText =
+    "Jumlah Credit: " + data.credit_amount;
+
+  const statusEl = document.getElementById("statusText");
+
+  if(data.status === "waiting_payment"){
+    statusEl.innerText = "Menunggu Pembayaran";
+    statusEl.className = "status waiting";
+  }
+
+  if(data.status === "pending"){
+    statusEl.innerText = "Menunggu Konfirmasi Admin";
+    statusEl.className = "status pending";
+  }
+
+  if(data.status === "approved"){
+    statusEl.innerText = "Pembayaran Berhasil ✔";
+    statusEl.className = "status approved";
+
+    setTimeout(()=>{
+      window.location.href = "/";
+    },3000);
+  }
+
+  // Update WhatsApp link
+  const message =
+    "Halo Admin, saya sudah transfer Rp " +
+    data.amount +
+    " untuk " +
+    data.credit_amount +
+    " credit.\n\nRequest ID: " +
+    data.id;
+
+  const encoded = encodeURIComponent(message);
+
+  document.getElementById("waBtn").onclick = ()=>{
+    window.open(
+      "https://wa.me/6281234567890?text="+encoded,
+      "_blank"
+    );
+  };
+}
+
+// Auto refresh tiap 5 detik
+loadStatus();
+setInterval(loadStatus, 5000);
+
+</script>
+
+</body>
+</html>
