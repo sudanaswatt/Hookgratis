@@ -71,17 +71,45 @@ if(proBtn){
 ========================= */
 
 async function checkUser(){
+
   const { data:{ user } } = await supabase.auth.getUser();
 
+  const adminSection = document.getElementById("adminSection");
+  const ADMIN_EMAIL = "sudanaswatt20@icloud.com";
+
   if(user){
+
     currentUser = user;
+
+    // tampilkan app
     loginModal.style.display = "none";
     appBox.style.display = "block";
     userEmail.innerText = user.email;
+
     await loadProfile(user);
+
+    // kontrol admin panel
+    if(adminSection){
+      if(user.email === ADMIN_EMAIL){
+        adminSection.style.display = "block";
+      } else {
+        adminSection.style.display = "none";
+      }
+    }
+
   } else {
+
+    currentUser = null;
+
+    // tampilkan login
     loginModal.style.display = "flex";
     appBox.style.display = "none";
+
+    // pastikan admin panel tersembunyi saat logout
+    if(adminSection){
+      adminSection.style.display = "none";
+    }
+
   }
 }
 
