@@ -319,7 +319,44 @@ logoutBtn.onclick = async ()=>{
   resultBox.innerHTML="Hook akan muncul di sini...";
   await checkUser();
 };
+/* =========================
+   DAILY CLAIM +10 CREDIT
+========================= */
 
+if(addCreditBtn){
+  addCreditBtn.onclick = async () => {
+
+    if(!currentUser) return alert("Login dulu.");
+
+    try {
+
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData?.session?.access_token;
+
+      if(!token) throw new Error("Session expired");
+
+      const response = await fetch("/api/add-credit", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+
+      const data = await response.json();
+
+      if(response.ok){
+        await loadProfile(currentUser);
+        alert("10 Credit berhasil ditambahkan.");
+      } else {
+        alert(data.error || "Sudah di klaim hari ini");
+      }
+
+    } catch(err){
+      alert("Network error.");
+    }
+
+  };
+}
 /* =========================
    GENERATE
 ========================= */
