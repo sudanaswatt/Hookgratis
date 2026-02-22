@@ -279,6 +279,19 @@ if(generateBtn){
 
     if(!currentUser) return alert("Login dulu.");
 
+    const productName = document.getElementById("productName")?.value.trim();
+    const productDesc = document.getElementById("productDesc")?.value.trim();
+    const category = document.getElementById("category")?.value;
+    const platform = document.getElementById("platform")?.value;
+    const audience = document.getElementById("audience")?.value;
+    const style = document.getElementById("style")?.value;
+    const duration = document.getElementById("duration")?.value;
+
+    if(!productName || !audience || !style || !platform){
+      alert("Field tidak lengkap.");
+      return;
+    }
+
     generateBtn.disabled = true;
     resultBox.innerHTML = "Generating...";
 
@@ -293,6 +306,13 @@ if(generateBtn){
           "Authorization":`Bearer ${token}`
         },
         body: JSON.stringify({
+          productName,
+          productDesc,
+          category,
+          platform,
+          audience,
+          style,
+          duration,
           mode: currentMode
         })
       });
@@ -302,6 +322,7 @@ if(generateBtn){
       if(!response.ok) throw new Error(data.error);
 
       resultBox.innerHTML = data.result;
+
       await loadProfile(currentUser);
 
     } catch(err){
