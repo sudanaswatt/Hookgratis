@@ -2,7 +2,8 @@
 <html>
 <head>
   <title>Admin Dashboard</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
   <style>
     body{
       margin:0;
@@ -29,6 +30,7 @@
     }
   </style>
 </head>
+
 <body>
 
 <h1>Admin Dashboard</h1>
@@ -47,33 +49,42 @@
 
 <script>
 
-const supabase = window.supabase.createClient(
+const { createClient } = supabase;
+
+const supabaseClient = createClient(
   "https://fvtqwxzkxzauyiaqpauu.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2dHF3eHpreHphdXlpYXFwYXV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2MzkyMDksImV4cCI6MjA4NzIxNTIwOX0.d1s0att2MuxyFBx5v7lYhGOkQdGe-viUCNRw_HXs4Rk"
+  "YOUR_ANON_KEY_DISINI"
 );
 
 async function checkAdmin(){
 
-  const { data: sessionData } = await supabase.auth.getSession();
-  const session = sessionData?.session;
+  try {
 
-  if(!session){
-    document.getElementById("adminStatus").innerText = "Belum login.";
-    return;
+    const { data: { user } } = await supabaseClient.auth.getUser();
+
+    if(!user){
+      document.getElementById("adminStatus").innerText =
+        "Belum login. Login dulu di halaman utama.";
+      return;
+    }
+
+    const ADMIN_EMAIL = "sudanaswatt20@icloud.com";
+
+    if(user.email !== ADMIN_EMAIL){
+      document.getElementById("adminStatus").innerText =
+        "Bukan admin.";
+      return;
+    }
+
+    document.getElementById("adminStatus").innerText =
+      "Admin berhasil login.";
+
+    await loadStats();
+
+  } catch(err){
+    document.getElementById("adminStatus").innerText =
+      "Error membaca session.";
   }
-
-  const user = session.user;
-
-  const ADMIN_EMAIL = "sudanaswatt20@icloud.com";
-
-  if(user.email !== ADMIN_EMAIL){
-    document.getElementById("adminStatus").innerText = "Bukan admin.";
-    return;
-  }
-
-  document.getElementById("adminStatus").innerText = "Admin berhasil login.";
-
-  await loadStats();
 }
 
 async function loadStats(){
@@ -83,25 +94,21 @@ async function loadStats(){
 
   const firstDayMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
-  // Total User
-  const { count: userCount } = await supabase
+  const { count: userCount } = await supabaseClient
     .from("profiles")
     .select("*", { count: "exact", head: true });
 
-  // Generate hari ini
-  const { count: todayCount } = await supabase
+  const { count: todayCount } = await supabaseClient
     .from("generate_history")
     .select("*", { count: "exact", head: true })
     .gte("created_at", today.toISOString());
 
-  // Generate bulan ini
-  const { count: monthCount } = await supabase
+  const { count: monthCount } = await supabaseClient
     .from("generate_history")
     .select("*", { count: "exact", head: true })
     .gte("created_at", firstDayMonth.toISOString());
 
-  // Pending topup
-  const { count: pendingCount } = await supabase
+  const { count: pendingCount } = await supabaseClient
     .from("topup_requests")
     .select("*", { count: "exact", head: true })
     .eq("status", "pending");
@@ -112,7 +119,11 @@ async function loadStats(){
   document.getElementById("pendingTopup").innerText = pendingCount || 0;
 }
 
-checkAdmin();
+window.addEventListener("load", async () => {
+  setTimeout(async () => {
+    await checkAdmin();
+  }, 500);
+});
 
 </script>
 
