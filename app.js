@@ -41,6 +41,14 @@ const audienceSelect = document.getElementById("audience");
 const styleSelect = document.getElementById("style");
 const durationSelect = document.getElementById("duration");
 
+let currentRequestId = null;
+let currentAmount = 0;
+
+function generateUniqueAmount(base) {
+  const random = Math.floor(Math.random() * 90) + 10;
+  return base + random;
+}
+
 /* =========================
    QRIS MODAL
 ========================= */
@@ -50,10 +58,46 @@ const confirmPaymentBtn = document.getElementById("confirmPaymentBtn");
 const closeQrisBtn = document.getElementById("closeQrisBtn");
 
 if (buyCreditBtn && qrisModal) {
-  buyCreditBtn.onclick = () => {
+  buyCreditBtn.onclick = async () => {
+
+    if (!currentUser) {
+      alert("Login dulu.");
+      return;
+    }
+
+    const baseAmount = 20000;
+    const finalAmount = generateUniqueAmount(baseAmount);
+
+    const { data, error } = await supabase
+      .from("topup_requests")
+      .insert([{
+        user_id: currentUser.id,
+        amount: finalAmount,
+        credit_amount: 100,
+        status: "waiting_payment"
+      }])
+      .select()
+      .single();
+
+    if (error) {
+      alert("Gagal membuat request");
+      console.log(error);
+      return;
+    }
+
+    currentRequestId = data.id;
+    currentAmount = finalAmount;
+
+    const amountText = document.getElementById("amountText");
+    if (amountText) {
+      amountText.innerText =
+        "Transfer Rp" + finalAmount.toLocaleString() + " untuk 100 Credit";
+    }
+
     qrisModal.style.display = "flex";
   };
 }
+
 
 if (closeQrisBtn && qrisModal) {
   closeQrisBtn.onclick = () => {
