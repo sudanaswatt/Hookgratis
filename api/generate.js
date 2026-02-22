@@ -62,63 +62,113 @@ export default async function handler(req, res) {
 
     if (mode === "free") {
 
-      const templates = [
+  const hooks = [
 
-`Pernah merasa konten ${platform} kamu kurang mendapat perhatian? ${productName} hadir untuk ${audience} yang ingin tampil lebih percaya diri dan lebih konsisten tanpa harus memikirkan strategi rumit setiap hari.`,
+`Stop scroll dulu, ${audience} pasti pernah ngalamin ini.
 
-`${productName} dirancang untuk membantu ${audience} mendapatkan hasil yang lebih stabil di ${platform}. Dengan pendekatan yang lebih terarah, kamu bisa membangun performa yang lebih kuat.`,
+Di ${platform}, persaingan makin ketat dan banyak yang cuma ikut tren tanpa arah jelas. ${productName} hadir buat bantu kamu tampil lebih beda, lebih terarah, dan nggak cuma sekadar numpang lewat di timeline.
 
-`Jika kamu ${audience} yang ingin meningkatkan performa di ${platform}, ${productName} bisa menjadi langkah awal yang lebih terukur dan lebih efisien.`,
+Kadang yang bikin beda itu bukan ribetnya strategi, tapi konsistensinya.`,
 
-`Persaingan di ${platform} semakin ketat. ${productName} membantu ${audience} tampil lebih relevan dan lebih menarik perhatian.`,
+`Kalau kamu ${audience} dan lagi serius main di ${platform}, ini penting banget.
 
-`Daripada terus mencoba tanpa arah, ${productName} membantu ${audience} membangun strategi yang lebih konsisten di ${platform}.`,
+Banyak yang fokus ke konten viral, tapi lupa bangun fondasi yang kuat. ${productName} bisa bantu kamu punya pendekatan yang lebih stabil dan nggak gampang tenggelam di antara kompetitor.
 
-`${productName} bukan hanya sekadar produk, tetapi solusi untuk ${audience} yang ingin berkembang lebih cepat di ${platform}.`,
+Karena yang konsisten biasanya yang menang.`,
 
-`Konten yang kuat dimulai dari pesan yang jelas. ${productName} membantu ${audience} menyampaikan nilai produk dengan lebih efektif di ${platform}.`,
+`Jujur aja, berapa kali kamu merasa hasil di ${platform} stuck di situ-situ aja?
 
-`Jika performa ${platform} terasa stagnan, mungkin saatnya mencoba pendekatan baru dengan ${productName} yang dirancang untuk ${audience}.`,
+Padahal effort sudah maksimal. ${productName} bantu ${audience} punya cara yang lebih terarah, jadi bukan cuma coba-coba tanpa hasil jelas.
 
-`${productName} membantu ${audience} membangun kepercayaan lebih cepat dan lebih konsisten di ${platform}.`,
+Kadang kita cuma butuh pendekatan yang lebih tepat.`,
 
-`Untuk ${audience} yang ingin hasil nyata di ${platform}, ${productName} menawarkan pendekatan yang lebih praktis dan lebih fokus.`,
+`Banyak ${audience} belum sadar kalau masalahnya bukan di produk, tapi di cara penyampaiannya.
 
-`${productName} hadir sebagai solusi untuk ${audience} yang ingin meningkatkan kualitas konten mereka di ${platform}.`,
+Di ${platform}, perhatian orang cuma beberapa detik. ${productName} bantu kamu tampil lebih relevan dan lebih cepat menarik perhatian tanpa terlihat terlalu memaksa.
 
-`Tidak perlu strategi rumit untuk berkembang di ${platform}. ${productName} membantu ${audience} tampil lebih percaya diri.`,
+Dan itu yang bikin orang berhenti scroll.`,
 
-`${productName} membantu ${audience} mendapatkan pendekatan yang lebih terstruktur dan lebih profesional di ${platform}.`,
+`Kalau kamu merasa sudah capek bikin konten tapi hasil belum maksimal, mungkin ini waktunya evaluasi.
 
-`Banyak ${audience} sudah mulai beralih ke solusi yang lebih efektif seperti ${productName} untuk meningkatkan performa di ${platform}.`,
+${productName} dirancang untuk ${audience} yang ingin tampil lebih profesional dan lebih meyakinkan di ${platform}, tanpa harus ribet mikirin strategi kompleks setiap hari.
 
-`${productName} memberikan fondasi yang lebih kuat bagi ${audience} yang ingin membangun kehadiran lebih solid di ${platform}.`,
+Kadang yang dibutuhkan cuma sistem yang lebih rapi.`,
 
-`Jika kamu serius ingin berkembang di ${platform}, ${productName} bisa membantu ${audience} mengambil langkah yang lebih tepat.`,
+`Serius, ${audience} yang main di ${platform} sekarang nggak bisa lagi asal posting.
 
-`${productName} membantu ${audience} mengoptimalkan potensi mereka di ${platform} tanpa harus membuang waktu mencoba hal yang tidak efektif.`,
+Algoritma berubah, tren berubah, tapi yang tetap adalah kualitas pendekatan. ${productName} bantu kamu punya arah yang lebih jelas supaya nggak cuma ikut-ikutan tren.
 
-`Daripada terus menebak strategi terbaik, ${productName} membantu ${audience} fokus pada pendekatan yang lebih konsisten di ${platform}.`,
+Karena ikut tren tanpa strategi jarang bertahan lama.`,
 
-`${productName} dirancang untuk ${audience} yang ingin hasil lebih stabil dan lebih terukur di ${platform}.`,
+`Pernah nggak kamu merasa sudah kerja keras, tapi hasil di ${platform} tetap biasa saja?
 
-`Saatnya ${audience} mengambil langkah yang lebih pasti di ${platform} dengan bantuan ${productName} yang lebih terarah.`
-      ];
+${productName} bantu ${audience} punya fondasi yang lebih kuat supaya performa lebih stabil dan nggak cuma naik turun karena faktor keberuntungan.
 
-      const result =
-        templates[Math.floor(Math.random() * templates.length)];
+Yang konsisten itu bukan yang paling viral, tapi yang paling terstruktur.`,
 
-      await supabase.from("generate_history").insert({
-        user_id: userId,
-        product_name: productName,
-        result,
-        mode: "free",
-        platform
-      });
+`Kalau target kamu di ${platform} cuma sekadar coba-coba, mungkin ini nggak terlalu penting.
 
-      return res.status(200).json({ result });
-    }
+Tapi kalau kamu ${audience} yang serius mau berkembang, ${productName} bisa bantu kamu tampil lebih terarah dan lebih percaya diri saat menyampaikan value.
 
+Karena percaya diri itu kelihatan.`,
+
+`Di era sekarang, orang makin pintar memilih konten.
+
+${productName} bantu ${audience} menyampaikan pesan dengan lebih jelas dan lebih fokus di ${platform}, jadi bukan cuma ramai tapi juga berdampak.
+
+Karena yang berdampak biasanya yang diingat.`,
+
+`Banyak yang berpikir makin banyak posting makin bagus.
+
+Padahal yang penting itu relevansi dan konsistensi. ${productName} bantu ${audience} di ${platform} supaya konten lebih terarah dan nggak cuma asal tayang.
+
+Strategi yang tepat lebih penting dari kuantitas.`,
+
+`Kalau kamu merasa hasil di ${platform} sering nggak konsisten, mungkin ini saatnya ubah pendekatan.
+
+${productName} dirancang buat ${audience} yang mau hasil lebih stabil tanpa harus overthinking setiap detail.
+
+Kadang yang bikin beda itu sistem kecil yang dilakukan terus-menerus.`,
+
+`Realitanya, ${platform} sekarang penuh dengan konten serupa.
+
+${productName} bantu ${audience} tampil lebih berbeda dan lebih punya identitas, jadi nggak cuma tenggelam di antara yang lain.
+
+Dan identitas itu yang bikin orang ingat.`,
+
+`Kalau kamu ${audience} yang ingin naik level di ${platform}, jangan cuma fokus di tampilan luar.
+
+${productName} bantu kamu membangun pendekatan yang lebih kuat dari dalam, jadi bukan cuma terlihat bagus tapi juga terasa meyakinkan.
+
+Karena kepercayaan itu dibangun, bukan dipaksakan.`,
+
+`Seringkali kita terlalu fokus ke angka view.
+
+Padahal yang lebih penting adalah kualitas interaksi. ${productName} bantu ${audience} di ${platform} supaya bukan cuma dilihat, tapi juga diperhatikan.
+
+Dan diperhatikan itu jauh lebih bernilai.`,
+
+`Kalau kamu masih merasa hasil di ${platform} belum sesuai ekspektasi, mungkin ini waktunya mencoba pendekatan berbeda.
+
+${productName} bantu ${audience} punya cara yang lebih terstruktur dan lebih matang dalam menyampaikan pesan.
+
+Karena yang matang biasanya bertahan lebih lama.`
+
+  ];
+
+  const result =
+    hooks[Math.floor(Math.random() * hooks.length)];
+
+  await supabase.from("generate_history").insert({
+    user_id: userId,
+    product_name: productName,
+    result,
+    mode: "free",
+    platform
+  });
+
+  return res.status(200).json({ result });
+}
     // =====================================================
     // PRO MODE (Potong Credit + AI)
     // =====================================================
@@ -140,7 +190,7 @@ export default async function handler(req, res) {
       }
 
       const prompt = `
-Buat hook video ${duration || "5-10 detik"} yang powerfull dengan gaya bahasa creator Indonesia.
+Buat hook video ${duration || "5-10 detik"} dengan gaya bahasa creator Indonesia.
 
 Kategori: ${category || "Umum"}
 Produk: ${productName}
@@ -158,7 +208,7 @@ Aturan:
 - Tanpa emoji
 - Tanpa hashtag
 - Tanpa simbol dekoratif
-- Fokus penuh pada produk
+- Fokus pada produk dan ${style}
 `;
 
       const response = await fetch(
