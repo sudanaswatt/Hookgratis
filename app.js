@@ -20,10 +20,13 @@ let currentMode = "free";
 const loginModal = document.getElementById("loginModal");
 const logoutBtn = document.getElementById("logoutBtn");
 const addCreditBtn = document.getElementById("addCreditBtn");
+const buyCreditBtn = document.getElementById("buyCreditBtn");
+
 const appBox = document.getElementById("appBox");
 const userEmail = document.getElementById("userEmail");
 const creditValue = document.getElementById("creditValue");
 const resultBox = document.getElementById("result");
+
 const proDashboard = document.getElementById("proDashboard");
 const proCredit = document.getElementById("proCredit");
 const historyList = document.getElementById("historyList");
@@ -39,22 +42,64 @@ const styleSelect = document.getElementById("style");
 const durationSelect = document.getElementById("duration");
 
 /* =========================
+   QRIS POPUP SYSTEM
+========================= */
+
+const qrisModal = document.getElementById("qrisModal");
+const confirmPaymentBtn = document.getElementById("confirmPaymentBtn");
+const closeQrisBtn = document.getElementById("closeQrisBtn");
+
+if (buyCreditBtn && qrisModal) {
+  buyCreditBtn.onclick = () => {
+    qrisModal.style.display = "flex";
+  };
+}
+
+if (closeQrisBtn && qrisModal) {
+  closeQrisBtn.onclick = () => {
+    qrisModal.style.display = "none";
+  };
+}
+
+if (confirmPaymentBtn && qrisModal) {
+  confirmPaymentBtn.onclick = async () => {
+
+    if (!currentUser) return alert("Login dulu.");
+
+    const { data: sessionData } = await supabase.auth.getSession();
+    const token = sessionData?.session?.access_token;
+
+    if (!token) return alert("Session expired.");
+
+    const response = await fetch("/api/request-topup", {
+      method: "POST",
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      alert("Topup dikirim. Tunggu konfirmasi admin.");
+      qrisModal.style.display = "none";
+    } else {
+      alert(data.error || "Terjadi kesalahan.");
+    }
+  };
+}
+
+/* =========================
    MODE SYSTEM
 ========================= */
 
 function updateModeUI() {
-
   if(currentMode === "free"){
-
     freeBtn.classList.add("active");
     proBtn.classList.remove("active");
-    proDashboard.style.display = "none";
-
+    if(proDashboard) proDashboard.style.display = "none";
   } else {
-
     proBtn.classList.add("active");
     freeBtn.classList.remove("active");
-    proDashboard.style.display = "block";
+    if(proDashboard) proDashboard.style.display = "block";
   }
 }
 
@@ -73,7 +118,6 @@ proBtn.onclick = () => {
 ========================= */
 
 async function loadProfile(user){
-
   const { data, error } = await supabase
     .from("profiles")
     .select("credits")
@@ -130,13 +174,10 @@ async function loadHistory(){
 ========================= */
 
 async function checkUser(){
-
   const { data:{user} } = await supabase.auth.getUser();
 
   if(user){
-
     currentUser = user;
-
     loginModal.style.display="none";
     appBox.style.display="block";
     userEmail.innerText = user.email;
@@ -145,10 +186,8 @@ async function checkUser(){
     await loadHistory();
 
   } else {
-
     loginModal.style.display="flex";
     appBox.style.display="none";
-
   }
 }
 
@@ -157,7 +196,6 @@ async function checkUser(){
 ========================= */
 
 document.getElementById("loginBtn").onclick = async ()=>{
-
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
@@ -172,7 +210,6 @@ document.getElementById("loginBtn").onclick = async ()=>{
 ========================= */
 
 document.getElementById("registerBtn").onclick = async ()=>{
-
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
@@ -193,32 +230,32 @@ logoutBtn.onclick = async ()=>{
 };
 
 /* =========================
-   ADD CREDIT
+   ADD CREDIT (Manual)
 ========================= */
 
-addCreditBtn.onclick = async () => {
+if(addCreditBtn){
+  addCreditBtn.onclick = async () => {
 
-  if(!currentUser) return alert("Login dulu.");
+    if(!currentUser) return alert("Login dulu.");
 
-  const { data: sessionData } = await supabase.auth.getSession();
-  const token = sessionData?.session?.access_token;
+    const { data: sessionData } = await supabase.auth.getSession();
+    const token = sessionData?.session?.access_token;
 
-  if(!token) return alert("Session expired.");
+    const response = await fetch("/api/add-credit", {
+      method: "POST",
+      headers: { "Authorization": `Bearer ${token}` }
+    });
 
-  const response = await fetch("/api/add-credit", {
-    method: "POST",
-    headers: { "Authorization": `Bearer ${token}` }
-  });
+    const data = await response.json();
 
-  const data = await response.json();
-
-  if(response.ok){
-    await loadProfile(currentUser);
-    alert("Credit ditambahkan.");
-  } else {
-    alert(data.error || "Gagal tambah credit.");
-  }
-};
+    if(response.ok){
+      await loadProfile(currentUser);
+      alert("Credit ditambahkan.");
+    } else {
+      alert(data.error || "Gagal tambah credit.");
+    }
+  };
+}
 
 /* =========================
    GENERATE
