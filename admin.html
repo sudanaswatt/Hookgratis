@@ -28,6 +28,53 @@
     h3{
       margin-bottom:10px;
     }
+    .card {
+  backdrop-filter: blur(10px);
+}
+
+.pending-item {
+  background: rgba(255,255,255,0.03);
+  padding:16px;
+  border-radius:14px;
+  margin-bottom:16px;
+  border:1px solid rgba(255,255,255,0.08);
+  transition:0.3s;
+}
+
+.pending-item:hover {
+  border:1px solid rgba(255,255,255,0.2);
+}
+
+.pending-label {
+  font-size:12px;
+  opacity:0.6;
+  margin-bottom:4px;
+}
+
+.pending-value {
+  font-weight:600;
+  margin-bottom:8px;
+}
+
+.approve-btn {
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  font-weight:600;
+  cursor:pointer;
+  background:linear-gradient(135deg,#22c55e,#16a34a);
+  color:white;
+  transition:0.3s;
+}
+
+.approve-btn:hover {
+  opacity:0.85;
+}
+
+.approve-btn:active {
+  transform:scale(0.98);
+}
   </style>
 </head>
 
@@ -140,20 +187,34 @@ async function loadStats(){
 
   data.forEach(item => {
     box.innerHTML += `
-      <div style="margin-bottom:15px;">
-        <p>User ID: ${item.user_id}</p>
-        <p>Amount: Rp${item.amount}</p>
-        <p>Credit: ${item.credit_amount}</p>
-        <button onclick="approveTopup('${item.id}')">
-          Approve
-        </button>
-      </div>
-    `;
+  <div class="pending-item">
+
+    <div class="pending-label">User ID</div>
+    <div class="pending-value">${item.user_id}</div>
+
+    <div class="pending-label">Amount</div>
+    <div class="pending-value">Rp ${item.amount.toLocaleString()}</div>
+
+    <div class="pending-label">Credit</div>
+    <div class="pending-value">${item.credit_amount} Credit</div>
+
+    <button class="approve-btn"
+      onclick="approveTopup('${item.id}', this)">
+      Approve Topup
+    </button>
+
+  </div>
+`;
   });
 }
-  window.approveTopup = async function(id){
+  window.approveTopup = async function(id, button){
 
-  const { data: sessionData } = await supabaseClient.auth.getSession();
+  button.innerText = "Processing...";
+  button.disabled = true;
+
+  const { data: sessionData } =
+    await supabaseClient.auth.getSession();
+
   const token = sessionData?.session?.access_token;
 
   const response = await fetch("/api/approve-topup", {
@@ -168,13 +229,17 @@ async function loadStats(){
   const result = await response.json();
 
   if(response.ok){
-    alert("Topup disetujui.");
+    button.innerText = "Approved ✓";
+    button.style.background =
+      "linear-gradient(135deg,#6366f1,#4f46e5)";
     await loadStats();
     await loadPendingTopup();
   } else {
+    button.innerText = "Approve Failed";
+    button.disabled = false;
     alert(result.error);
   }
-}
+};
 
 window.addEventListener("load", async () => {
   setTimeout(async () => {
