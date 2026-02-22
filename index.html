@@ -109,38 +109,46 @@
   <!-- PRO DASHBOARD -->
   <div class="card dashboard-card">
     <div id="proDashboard" style="display:none;">
+
       <h3>Dashboard Pro</h3>
 
       <p>Credit Anda: <span id="proCredit">0</span></p>
 
       <button id="buyCreditBtn" class="generate-btn">
-        Beli 100 Credit (Test)
+        Beli 100 Credit
       </button>
-    <div id="qrisModal" class="qris-modal">
+
+      <h4 style="margin-top:25px;">Riwayat Generate</h4>
+      <div id="historyList"></div>
+
+      <h4 style="margin-top:25px;">Pending Topup (Admin)</h4>
+      <div id="adminTopupList"></div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- QRIS MODAL (LETakkan DI LUAR container) -->
+
+<div id="qrisModal" class="qris-modal">
 
   <div class="qris-box">
 
     <h3>Scan QRIS untuk Topup</h3>
 
-    <img src="qris.png" class="qris-img">
+    <img src="qris.png" alt="QRIS" class="qris-image">
 
-    <p>Transfer Rp20.000 untuk 100 Credit</p>
+    <p style="margin-top:15px;">Transfer Rp20.000 untuk 100 Credit</p>
 
     <button id="confirmPaymentBtn" class="generate-btn">
       Saya Sudah Bayar
     </button>
 
-    <button id="closeQrisBtn" class="close-btn">
+    <button id="closeQrisBtn" class="btn-logout" style="margin-top:10px;">
       Tutup
     </button>
 
-  </div>
-
-</div>
-      <h4>Riwayat Generate</h4>
-      <div id="historyList"></div>
-      <div id="adminTopupList"></div>
-    </div>
   </div>
 
 </div>
