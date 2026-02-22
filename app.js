@@ -213,7 +213,15 @@ async function loadHistory(){
     return;
   }
 
-  data.forEach(item=>{
+  let expanded = false;
+
+function renderHistory(list){
+
+  historyList.innerHTML = "";
+
+  const itemsToShow = expanded ? list : [list[0]];
+
+  itemsToShow.forEach(item=>{
     historyList.innerHTML += `
       <div style="margin-bottom:15px;">
         <div style="font-size:12px;opacity:.6;">
@@ -226,7 +234,22 @@ async function loadHistory(){
     `;
   });
 
+  if(list.length > 1){
+    historyList.innerHTML += `
+      <button id="toggleHistoryBtn"
+        style="margin-top:10px;background:none;border:none;color:#8b5cf6;cursor:pointer;">
+        ${expanded ? "Tutup" : "Lihat Semua"}
+      </button>
+    `;
+
+    document.getElementById("toggleHistoryBtn").onclick = ()=>{
+      expanded = !expanded;
+      renderHistory(list);
+    };
+  }
 }
+
+renderHistory(data);
 /* =========================
    BUY CREDIT (QRIS)
 ========================= */
