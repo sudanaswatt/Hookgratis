@@ -205,7 +205,8 @@ textarea{
   font-size:15px;
 }
 
-/* Mode badge (dipakai app.js) */
+/* Mode badge */
+
 .mode-badge{
   display:inline-block;
   padding:6px 12px;
@@ -231,7 +232,8 @@ textarea{
   margin-top:20px;
 }
 
-#historyList div{
+#historyList div,
+#adminTopupList div{
   background:rgba(255,255,255,.05);
   padding:12px;
   border-radius:10px;
@@ -240,7 +242,7 @@ textarea{
 }
 
 /* =========================
-   MODAL
+   LOGIN MODAL
 ========================= */
 
 #loginModal{
@@ -281,6 +283,46 @@ textarea{
 }
 
 /* =========================
+   QRIS MODAL
+========================= */
+
+.qris-modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.75);
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+  animation:fadeIn .2s ease;
+}
+
+.qris-box{
+  background:#1e293b;
+  padding:30px;
+  border-radius:20px;
+  text-align:center;
+  width:90%;
+  max-width:380px;
+  box-shadow:0 20px 60px rgba(0,0,0,.6);
+}
+
+.qris-image{
+  width:100%;
+  border-radius:15px;
+  margin:15px 0;
+}
+
+/* =========================
+   ANIMATION
+========================= */
+
+@keyframes fadeIn{
+  from{opacity:0;}
+  to{opacity:1;}
+}
+
+/* =========================
    RESPONSIVE
 ========================= */
 
@@ -304,38 +346,4 @@ textarea{
     justify-content:space-between;
   }
 
-}
-.qris-modal{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.7);
-  justify-content:center;
-  align-items:center;
-  z-index:9999;
-}
-
-.qris-box{
-  background:#1e293b;
-  padding:25px;
-  border-radius:20px;
-  text-align:center;
-  width:90%;
-  max-width:350px;
-}
-
-.qris-img{
-  width:220px;
-  margin:15px 0;
-  border-radius:10px;
-}
-
-.close-btn{
-  margin-top:10px;
-  padding:10px;
-  width:100%;
-  background:#ef4444;
-  border:none;
-  border-radius:10px;
-  color:white;
 }
