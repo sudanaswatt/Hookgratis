@@ -39,18 +39,19 @@
 <script>
 document.addEventListener("DOMContentLoaded", () => {
 
-  const statusText = document.getElementById("statusText");
-  const amountText = document.getElementById("amountText");
+  const urlParams = new URLSearchParams(window.location.search);
+  const requestId = urlParams.get("id");
+
   const waBtn = document.getElementById("waBtn");
 
-  statusText.innerText = "Terima kasih 🙏 Pembayaran Anda sedang kami proses.";
-
-  amountText.innerText =
-    "Tim admin akan segera memverifikasi pembayaran Anda.";
-
   waBtn.addEventListener("click", () => {
-    const message =
-      "Halo admin, saya sudah melakukan pembayaran dan ingin konfirmasi.";
+
+    let message = "Halo admin, saya sudah melakukan pembayaran.";
+
+    if(requestId){
+      message += ` ID Pembayaran: ${requestId}`;
+    }
+
     window.location.href =
       `https://wa.me/6281523779397?text=${encodeURIComponent(message)}`;
   });
